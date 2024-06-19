@@ -20,6 +20,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/> <!-- normal -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
@@ -158,6 +159,7 @@
                 <data android:scheme="file"/>
                 <data android:scheme="ftp"/>
                 <data android:scheme="ftps"/>
+                <data android:scheme="ftpes"/>
                 <data android:scheme="sftp"/>
                 <data android:scheme="content"/>
                 <data android:scheme="http"/>

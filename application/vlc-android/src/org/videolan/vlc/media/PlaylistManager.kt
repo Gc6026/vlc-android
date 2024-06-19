@@ -2,6 +2,7 @@ package org.videolan.vlc.media
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.widget.Toast
@@ -53,6 +54,8 @@ import org.videolan.tools.AUDIO_RESUME_PLAYBACK
 import org.videolan.tools.AUDIO_SHUFFLING
 import org.videolan.tools.AUDIO_STOP_AFTER
 import org.videolan.tools.AppScope
+import org.videolan.tools.DAV1D_THREAD_NUMBER
+import org.videolan.tools.HTTP_USER_AGENT
 import org.videolan.tools.KEY_AUDIO_FORCE_SHUFFLE
 import org.videolan.tools.KEY_INCOGNITO
 import org.videolan.tools.KEY_PLAYBACK_RATE
@@ -66,6 +69,9 @@ import org.videolan.tools.POSITION_IN_AUDIO_LIST
 import org.videolan.tools.POSITION_IN_MEDIA
 import org.videolan.tools.POSITION_IN_MEDIA_LIST
 import org.videolan.tools.POSITION_IN_SONG
+import org.videolan.tools.SLEEP_TIMER_DEFAULT_INTERVAL
+import org.videolan.tools.SLEEP_TIMER_DEFAULT_RESET_INTERACTION
+import org.videolan.tools.SLEEP_TIMER_DEFAULT_WAIT
 import org.videolan.tools.Settings
 import org.videolan.tools.VIDEO_PAUSED
 import org.videolan.tools.VIDEO_RESUME_PLAYBACK
@@ -78,6 +84,7 @@ import org.videolan.vlc.R
 import org.videolan.vlc.gui.browser.BaseBrowserFragment
 import org.videolan.vlc.gui.video.VideoPlayerActivity
 import org.videolan.vlc.util.FileUtils
+import org.videolan.vlc.util.NetworkConnectionManager
 import org.videolan.vlc.util.awaitMedialibraryStarted
 import org.videolan.vlc.util.isSchemeFD
 import org.videolan.vlc.util.isSchemeHttpOrHttps
@@ -87,6 +94,7 @@ import org.videolan.vlc.util.updateNextProgramAfterThumbnailGeneration
 import org.videolan.vlc.util.updateWithMLMeta
 import org.videolan.vlc.util.validateLocation
 import java.security.SecureRandom
+import java.util.Calendar
 import java.util.Stack
 import kotlin.math.max
 
@@ -265,6 +273,14 @@ class PlaylistManager(val service: PlaybackService) : MediaWrapperList.EventList
             service.showNotification()
         }
         if (settings.getBoolean(KEY_AUDIO_FORCE_SHUFFLE, false) && getCurrentMedia()?.type == MediaWrapper.TYPE_AUDIO && !shuffling && canShuffle()) shuffle()
+        if (settings.getLong(SLEEP_TIMER_DEFAULT_INTERVAL, -1L) != -1L) {
+            service.waitForMediaEnd = settings.getBoolean(SLEEP_TIMER_DEFAULT_WAIT, false)
+            service.resetOnInteraction = settings.getBoolean(SLEEP_TIMER_DEFAULT_RESET_INTERACTION, false)
+            val sleepTime = Calendar.getInstance()
+            sleepTime.timeInMillis += settings.getLong(SLEEP_TIMER_DEFAULT_INTERVAL, -1L)
+            sleepTime.set(Calendar.SECOND, 0)
+            service.setSleepTimer(sleepTime)
+        }
     }
 
     @Volatile
@@ -511,6 +527,13 @@ class PlaylistManager(val service: PlaybackService) : MediaWrapperList.EventList
             if (shouldDisableCookieForwarding) {
                 shouldDisableCookieForwarding = false
                 media.addOption(":no-http-forward-cookies")
+            }
+            settings.getString(HTTP_USER_AGENT, null)?.let {
+                 media.addOption(":http-user-agent=$it")
+            }
+            val dav1dThreadNumber = settings.getString(DAV1D_THREAD_NUMBER, "") ?: ""
+            if (dav1dThreadNumber.isNotEmpty() && dav1dThreadNumber.toInt() >= 1) {
+                media.addOption(":dav1d-thread-frames=$dav1dThreadNumber")
             }
             //todo in VLC 4.0, this should be done by using libvlc_media_player_set_time instead of start-time
             media.addOption(":start-time=${start/1000L}")
@@ -1011,7 +1034,6 @@ class PlaylistManager(val service: PlaybackService) : MediaWrapperList.EventList
     fun getMediaList(): List<MediaWrapper> = mediaList.copy
 
     fun setABRepeatValue(media: MediaWrapper?, time: Long) {
-        if (settings.getBoolean(PLAYBACK_HISTORY, true)) return
         val value = abRepeat.value ?: ABRepeat()
         when {
             value.start == -1L -> {
@@ -1025,8 +1047,10 @@ class PlaylistManager(val service: PlaybackService) : MediaWrapperList.EventList
                 value.stop = time
             }
         }
-        media?.setLongMeta(MediaWrapper.META_AB_REPEAT_START, value.start)
-        media?.setLongMeta(MediaWrapper.META_AB_REPEAT_STOP, value.stop)
+        if (settings.getBoolean(PLAYBACK_HISTORY, true)) {
+            media?.setLongMeta(MediaWrapper.META_AB_REPEAT_START, value.start)
+            media?.setLongMeta(MediaWrapper.META_AB_REPEAT_STOP, value.stop)
+        }
         abRepeat.value = value
     }
 
@@ -1156,8 +1180,8 @@ class PlaylistManager(val service: PlaybackService) : MediaWrapperList.EventList
                 }
                 MediaPlayer.Event.TimeChanged -> {
                     abRepeat.value?.let {
-                        if (it.stop != -1L && player.getCurrentTime() > it.stop) service.setTime(it.start)
-                        if (player.getCurrentTime() < it.start) service.setTime(it.start)
+                        if (it.stop != -1L && player.getCurrentTime() > it.stop) service.setTime(it.start, false)
+                        if (player.getCurrentTime() < it.start) service.setTime(it.start, false)
                     }
                     if (player.getCurrentTime() % 10 == 0L) savePosition()
                     val now = System.currentTimeMillis()

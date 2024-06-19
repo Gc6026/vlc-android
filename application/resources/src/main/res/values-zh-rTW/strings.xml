@@ -23,28 +23,14 @@
     <string name="searchable_hint">搜尋…</string>
     <string name="history">歷史記錄</string>
 
-    <string name="sortby_name_asc">名稱由 A 到 Z</string>
-    <string name="sortby_name_desc">名稱由 Z 到 A</string>
-    <string name="sortby_artist_name_asc">藝人名稱由 A 到 Z</string>
-    <string name="sortby_artist_name_desc">藝人名稱由 Z 到 A</string>
-    <string name="sortby_album_name_asc">專輯名稱由 A 到 Z</string>
-    <string name="sortby_album_name_desc">專輯名稱由 Z 到 A</string>
-    <string name="sortby_filename_asc">檔案名稱由 A 到 Z</string>
-    <string name="sortby_filename_desc">檔案名稱由 Z 到 A</string>
+    <string name="sort_alpha_asc">A → Z</string>
+    <string name="sort_alpha_desc">Z → A</string>
     <string name="sortby_length_asc">最短優先</string>
     <string name="sortby_length_desc">最長優先</string>
-    <string name="sortby_date_asc">最舊日期優先</string>
-    <string name="sortby_date_desc">最新日期優先</string>
-    <string name="sortby_last_modified_date_asc">最舊新增優先</string>
-    <string name="sortby_last_modified_date_desc">最新新增優先</string>
-    <string name="sortby_number_asc">較多影片在群組內優先</string>
-    <string name="sortby_number_desc">較少影片在群組內優先</string>
-    <string name="sortby_date_insertion_asc">最舊插入日期優先</string>
-    <string name="sortby_date_insertion_desc">最新插入日期優先</string>
-    <string name="sortby_date_last_modified_asc">最舊修改日期優先</string>
-    <string name="sortby_date_last_modified_desc">最新修改日期優先</string>
-    <string name="sortby_date_release_asc">最舊發行日期優先</string>
-    <string name="sortby_date_release_desc">最新發行日期優先</string>
+    <string name="sortby_number_asc">較多影片在群組內</string>
+    <string name="sortby_number_desc">較少影片在群組內</string>
+    <string name="sort_date_asc">最舊優先</string>
+    <string name="sort_date_desc">最新優先</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="other">找到 %d 個結果</item>
@@ -193,6 +179,8 @@
     <string name="jump_to_time">跳至時間</string>
     <string name="subtitle_select">選擇字幕檔</string>
     <string name="wait_before_sleep">等待目前媒體項目先完成</string>
+    <string name="reset_on_interaction">任何互動時重設</string>
+    <string name="default_sleep_timer_summary">%1$s，等待媒體結束：%2$s，互動時重設：%3$s</string>
 
     <string name="server_add_title">新增伺服器至收藏</string>
     <string name="server_domain_hint">伺服器地址（網域名稱或 IP 位址）</string>
@@ -526,7 +514,7 @@
     <string name="restart_message">應用程式重新啟動後，變更才會生效。\n\n現在要重新啟動嗎？</string>
     <string name="restart_message_OK">確定</string>
     <string name="restart_message_Later">稍後</string>
-    <string name="browser_show_all_title">顯示所有檔案</string>
+    <string name="browser_show_all_title">僅顯示多媒體檔案</string>
 
     <string name="developer_prefs_category">開發者</string>
     <string name="enable_verbose_mode">Verbose</string>
@@ -543,6 +531,7 @@
     <string name="dump_logcat">傾印 logcat 記錄檔</string>
     <string name="dump_logcat_success">Logcat 成功傾印到 %1$s！</string>
     <string name="dump_logcat_failure">傾印 logcat 失敗。</string>
+    <string name="http_user_agent">HTTP 使用者代理字串</string>
     <string name="custom_libvlc_options">自訂 libVLC 選項</string>
     <string name="custom_libvlc_options_invalid">無效的 libVLC 選項！</string>
 
@@ -937,6 +926,7 @@
     <string name="mark_as_played">標記為已播放</string>
     <string name="mark_as_not_played">標記為未播放</string>
     <string name="mark_all_as_played">全部標記為已播放</string>
+    <string name="mark_all_as_not_played">全部標記為未播放</string>
     <string name="new_group">新群組</string>
     <string name="new_group_desc">建立新群組</string>
 
@@ -1216,4 +1206,12 @@
     <string name="podcast_mode_help">播放符合以下條件之一的單一曲目時會出現 podcast 控制：\n\t• 長度大於 60 分鐘\n\t• 長度大於 15 分鐘，無專輯名稱\n\t• 類型為 %s</string>
     <string name="voice_control">語音控制</string>
     <string name="voice_control_help">可以透過 Google 助理透過說出以下命令來控制VLC：\n\t• 播放、暫停、停止、上一個、下一個\n\t• 快退、快轉、重複&lt;全部|一個|關閉&gt;\n \t • 跳至&lt;時間&gt;，跳過&lt;持續時間&gt;\n\t• 這是什麼&lt;藝人|專輯|歌曲&gt;\n\t• 播放[藝人|專輯|歌曲|類型|播放清單] &lt;名稱&gt;</string>
+
+    <string name="network" >網路</string>
+    <string name="metered_connection">在計量連線時要對串流執行的動作</string>
+    <string name="metered_do_nothing">不要執行任何動作</string>
+    <string name="metered_stop">停止播放</string>
+    <string name="metered_warn">警告我（音訊播放可能會錯過警告）</string>
+    <string name="metered_connection_stopped">因為是計量連線，因此媒體停止播放</string>
+    <string name="metered_connection_warning">您目前使用的是計量連線。可能需要付費。</string>
 </resources>

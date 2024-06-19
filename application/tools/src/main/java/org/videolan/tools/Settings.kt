@@ -132,6 +132,7 @@ const val KEY_ENABLE_REMOTE_ACCESS = "enable_remote_access"
 const val KEY_REMOTE_ACCESS_ML_CONTENT = "remote_access_medialibrary_content"
 const val REMOTE_ACCESS_FILE_BROWSER_CONTENT = "remote_access_file_browser_content"
 const val REMOTE_ACCESS_NETWORK_BROWSER_CONTENT = "remote_access_network_browser_content"
+const val REMOTE_ACCESS_HISTORY_CONTENT = "remote_access_history_content"
 const val REMOTE_ACCESS_PLAYBACK_CONTROL = "remote_access_playback_control"
 const val REMOTE_ACCESS_LOGS = "remote_access_logs"
 const val KEYSTORE_PASSWORD = "keystore_encrypted_password"
@@ -216,13 +217,21 @@ const val WIDGETS_BACKGROUND_LAST_COLORS = "widgets_background_last_colors"
 const val WIDGETS_FOREGROUND_LAST_COLORS = "widgets_foreground_last_colors"
 const val CUSTOM_POPUP_HEIGHT = "custom_popup_height"
 
+const val SLEEP_TIMER_DEFAULT_INTERVAL = "sleep_timer_default_interval"
+const val SLEEP_TIMER_DEFAULT_WAIT = "sleep_timer_default_wait"
+const val SLEEP_TIMER_DEFAULT_RESET_INTERACTION = "sleep_timer_default_reset_interaction"
 const val SLEEP_TIMER_WAIT = "sleep_timer_wait"
+const val SLEEP_TIMER_RESET_INTERACTION = "sleep_timer_reset_interaction"
 
 const val NOTIFICATION_PERMISSION_ASKED = "notification_permission_asked"
 const val PLAYLIST_REPLACE = "playlist_replace"
+const val HTTP_USER_AGENT = "http_user_agent"
+const val DAV1D_THREAD_NUMBER = "dav1d_thread_number"
 
 //files
 const val BROWSER_SHOW_HIDDEN_FILES = "browser_show_hidden_files"
+const val BROWSER_SHOW_ONLY_MULTIMEDIA = "browser_show_only_multimedia"
+const val BROWSER_DISPLAY_IN_CARDS = "browser_display_in_cards"
 
 // Albums
 const val ALBUMS_SHOW_TRACK_NUMBER = "albums_show_track_number"

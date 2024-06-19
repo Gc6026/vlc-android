@@ -23,28 +23,14 @@
     <string name="searchable_hint">Recherche…</string>
     <string name="history">Historique</string>
 
-    <string name="sortby_name_asc">Nom A → Z</string>
-    <string name="sortby_name_desc">Nom Z → A</string>
-    <string name="sortby_artist_name_asc">Nom d’artiste A → Z</string>
-    <string name="sortby_artist_name_desc">Nom d’artiste Z → A</string>
-    <string name="sortby_album_name_asc">Nom d’album A → Z</string>
-    <string name="sortby_album_name_desc">Nom d’album Z → A</string>
-    <string name="sortby_filename_asc">Nom de fichier A → Z</string>
-    <string name="sortby_filename_desc">Nom de fichier Z → A</string>
+    <string name="sort_alpha_asc">A → Z</string>
+    <string name="sort_alpha_desc">Z → A</string>
     <string name="sortby_length_asc">Le plus court en premier</string>
     <string name="sortby_length_desc">Le plus long en premier</string>
-    <string name="sortby_date_asc">Date la plus ancienne en premier</string>
-    <string name="sortby_date_desc">La date la plus récente en premier</string>
-    <string name="sortby_last_modified_date_asc">L’ajout le plus ancien en premier</string>
-    <string name="sortby_last_modified_date_desc">L’ajout le plus récent en premier</string>
-    <string name="sortby_number_asc">Plus de vidéos dans le premier groupe</string>
-    <string name="sortby_number_desc">Moins de vidéos dans le premier groupe </string>
-    <string name="sortby_date_insertion_asc">Date d’insertion la plus ancienne en premier</string>
-    <string name="sortby_date_insertion_desc">Date d’insertion la plus récente en premier</string>
-    <string name="sortby_date_last_modified_asc">Date de modification la plus ancienne en premier</string>
-    <string name="sortby_date_last_modified_desc">Date de modification la plus récente en premier</string>
-    <string name="sortby_date_release_asc">Date de parution la plus ancienne en premier</string>
-    <string name="sortby_date_release_desc">Date de parution la plus récente en premier</string>
+    <string name="sortby_number_asc">Plus de vidéos en groupe</string>
+    <string name="sortby_number_desc">Moins de vidéos en groupe</string>
+    <string name="sort_date_asc">Le plus ancien en premier</string>
+    <string name="sort_date_desc">Le plus récent en premier</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="one">%d résultat trouvé</item>
@@ -213,7 +199,6 @@
     <string name="jump_to_time">Aller au temps</string>
     <string name="subtitle_select">Sélectionner des sous-titres</string>
     <string name="wait_before_sleep">Attendez que le multimédia en cours se termine</string>
-
     <string name="server_add_title">Ajouter un serveur aux favoris</string>
     <string name="server_domain_hint">Adresse du serveur (domaine ou adresse IP)</string>
     <string name="server_share_hint">Nom du partage réseau (ou adresse IP)</string>
@@ -546,7 +531,7 @@
     <string name="restart_message">Les changements ne seront pris en compte qu’après le redémarrage de l’application.\n\nRedémarrer maintenant ?</string>
     <string name="restart_message_OK">OK</string>
     <string name="restart_message_Later">Plus tard</string>
-    <string name="browser_show_all_title">Afficher tous les fichiers</string>
+    <string name="browser_show_all_title">Afficher uniquement les fichiers multimédias</string>
 
     <string name="developer_prefs_category">Développeur</string>
     <string name="enable_verbose_mode">Verbosité</string>
@@ -563,6 +548,7 @@
     <string name="dump_logcat">Cliché du journal logcat</string>
     <string name="dump_logcat_success">Logcat enregistré avec succès dans : %1$s !</string>
     <string name="dump_logcat_failure">Échec de l’enregistrement de logcat.</string>
+    <string name="http_user_agent">Agent utilisateur HTTP</string>
     <string name="custom_libvlc_options">Options personnalisées de libVLC</string>
     <string name="custom_libvlc_options_invalid">Options invalides pour libVLC !</string>
 
@@ -961,6 +947,7 @@
     <string name="mark_as_played">Marquer comme vu</string>
     <string name="mark_as_not_played">Marquer comme non vu</string>
     <string name="mark_all_as_played">Marquer tout comme vu</string>
+    <string name="mark_all_as_not_played">Marquer tous les éléments comme non joués</string>
     <string name="new_group">Nouveau groupe</string>
     <string name="new_group_desc">Créer un nouveau groupe</string>
 
@@ -1244,4 +1231,12 @@
     <string name="podcast_mode_help">Les commandes de podcast apparaissent lors de la lecture d’une seule piste qui répond à l’un des critères suivants :\n\t• Durée supérieure à 60 min\n\t• Durée supérieure à 15 min sans nom d’album\n\t• Le genre est %s</string>
     <string name="voice_control">Commande vocale</string>
     <string name="voice_control_help">VLC peut être contrôlé via Google Assistant en prononçant les commandes suivantes :\n\t• Lecture, Pause, Stop, Précédent, Suivant\n\t• Retour, Avance rapide, Répéter &lt;all|one|off&gt;\n\t• Sauter à &lt;time&gt;, Sauter &lt;duration&gt;\n\t• Qu’est-ce que c’est &lt;artist|album|song&gt;\n\t• Jouer [artist|album|song|genre|playlist] &lt;name&gt;</string>
+
+    <string name="network" >Réseau</string>
+    <string name="metered_connection">Agir sur les flux lorsque la connexion est tarifée.</string>
+    <string name="metered_do_nothing">Ne rien faire</string>
+    <string name="metered_stop">Arrêter la lecture</string>
+    <string name="metered_warn">Avertissez-moi (l’avertissement peut ne pas être pris en compte lors de la lecture audio)</string>
+    <string name="metered_connection_stopped">Le média s’est arrêté parce que la connexion est tarifée.</string>
+    <string name="metered_connection_warning">Votre connexion est tarifée. Des frais peuvent s’appliquer.</string>
 </resources>

@@ -120,13 +120,14 @@
                 app:layout_constraintStart_toEndOf="@+id/browser_checkbox"
                 app:layout_constraintTop_toTopOf="parent"
                 app:media="@{item}"
-                tools:srcCompat="@drawable/ic_am_folder" />
+                tools:srcCompat="@drawable/ic_folder" />
 
         <org.videolan.vlc.gui.view.MiniVisualizer
                 android:id="@+id/playing"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 app:bar_color="?attr/mini_visualizer_color"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/item_icon"
                 app:layout_constraintEnd_toEndOf="@+id/item_icon"
                 app:layout_constraintStart_toStartOf="@+id/item_icon"

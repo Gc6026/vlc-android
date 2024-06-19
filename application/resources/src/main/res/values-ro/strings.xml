@@ -23,28 +23,14 @@
     <string name="searchable_hint">Căutare…</string>
     <string name="history">Istoric</string>
 
-    <string name="sortby_name_asc">Nume A → Z</string>
-    <string name="sortby_name_desc">Nume Z → A</string>
-    <string name="sortby_artist_name_asc">Numele artistului A → Z</string>
-    <string name="sortby_artist_name_desc">Numele artistului Z → A</string>
-    <string name="sortby_album_name_asc">Numele albumului A → Z</string>
-    <string name="sortby_album_name_desc">Numele albumului Z → A</string>
-    <string name="sortby_filename_asc">Numele fișierului A → Z</string>
-    <string name="sortby_filename_desc">Numele fișierului Z → A</string>
+    <string name="sort_alpha_asc">A → Z</string>
+    <string name="sort_alpha_desc">Z → A</string>
     <string name="sortby_length_asc">Întâi cel mai scurt</string>
     <string name="sortby_length_desc">Întâi cel mai lung</string>
-    <string name="sortby_date_asc">Întâi cea mai veche dată</string>
-    <string name="sortby_date_desc">Întâi cea mai nouă dată</string>
-    <string name="sortby_last_modified_date_asc">Mai întâi cea mai veche adăugare</string>
-    <string name="sortby_last_modified_date_desc">Mai întâi cea mai nouă adăugare</string>
-    <string name="sortby_number_asc">Mai multe videoclipuri în grup mai întâi</string>
-    <string name="sortby_number_desc">Mai puține videoclipuri în grup mai întâi</string>
-    <string name="sortby_date_insertion_asc">Întâi data inserării cea mai veche</string>
-    <string name="sortby_date_insertion_desc">Întâi data inserării cea mai nouă</string>
-    <string name="sortby_date_last_modified_asc">Întâi data modificării cea mai veche</string>
-    <string name="sortby_date_last_modified_desc">Întâi data modificării cea mai nouă</string>
-    <string name="sortby_date_release_asc">Întâi data lansării cea mai veche</string>
-    <string name="sortby_date_release_desc">Întâi data lansării cea mai nouă</string>
+    <string name="sortby_number_asc">Mai multe videoclipuri în grup</string>
+    <string name="sortby_number_desc">Mai puține videoclipuri în grup</string>
+    <string name="sort_date_asc">Întâi cele mai vechi</string>
+    <string name="sort_date_desc">Întâi cele mai noi</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="one">%d rezultat găsit</item>
@@ -213,6 +199,8 @@
     <string name="jump_to_time">Sări la timpul</string>
     <string name="subtitle_select">Selectează fișierul subtitlu</string>
     <string name="wait_before_sleep">Așteaptă ca elementul media actual să se termine primul</string>
+    <string name="reset_on_interaction">Resetează orice interacțiune</string>
+    <string name="default_sleep_timer_summary">%1$s, așteaptă sfârșitul fișierului media: %2$s, resetare la interacțiune: %3$s</string>
 
     <string name="server_add_title">Adaugă un server nou la favorite</string>
     <string name="server_domain_hint">Adresa serverului (nume domeniu sau IP)</string>
@@ -476,6 +464,7 @@
     <string name="remote_access_info">Informații despre accesul de la distanță</string>
     <string name="remote_access_content">Conținut</string>
     <string name="remote_access_medialibrary_content">Conținutul bibliotecii media</string>
+    <string name="remote_access_medialibrary_content_summary">Activat: %1$s\nDezactivat: %2$s</string>
     <string name="remote_access_file_browser_content">Navigatorul de fișiere</string>
     <string name="remote_access_network_browser_content">Navigatorul de rețea</string>
     <string name="remote_access_playback_control">Controlează redarea</string>
@@ -545,7 +534,7 @@
     <string name="restart_message">Modificările vor intra în vigoare după repornirea aplicației. \n \nReporniți acum?</string>
     <string name="restart_message_OK">OK</string>
     <string name="restart_message_Later">Mai târziu</string>
-    <string name="browser_show_all_title">Afișați toate fișierele</string>
+    <string name="browser_show_all_title">Afișează numai fișierele multimedia</string>
 
     <string name="developer_prefs_category">Dezvoltator</string>
     <string name="enable_verbose_mode">Detaliat</string>
@@ -562,6 +551,7 @@
     <string name="dump_logcat">Colectează jurnalul logcat</string>
     <string name="dump_logcat_success">Logcat a fost colectat cu succes în %1$s!</string>
     <string name="dump_logcat_failure">Colectarea logcat a eșuat.</string>
+    <string name="http_user_agent">Agent de utilizator HTTP</string>
     <string name="custom_libvlc_options">Opțiuni personalizate libVLC</string>
     <string name="custom_libvlc_options_invalid">Setări libVLC eronate!</string>
 
@@ -960,6 +950,7 @@
     <string name="mark_as_played">Marcați ca fiind jucat</string>
     <string name="mark_as_not_played">Marcați ca neredat</string>
     <string name="mark_all_as_played">Marcați toate ca fiind jucate</string>
+    <string name="mark_all_as_not_played">Marchează tot ca neredat</string>
     <string name="new_group">Grup nou</string>
     <string name="new_group_desc">Creați un nou grup</string>
 
@@ -1067,6 +1058,16 @@
     <string name="banned">Dosar interzis (atinge lung pentru a schimba)</string>
     <string name="banned_tv">Dosar interzis</string>
     <string name="banned_parent">Interzis de dosarul părinte</string>
+    <plurals name="duplicate_two_options_secondary">
+        <item quantity="one">Acest element se află deja în \"1%s\" playlist. </item>
+        <item quantity="few">Aceste elemente se află deja în \"1%s\" playlist. </item>
+        <item quantity="other">Aceste elemente se află deja în \"1%s\" de playlist.</item>
+    </plurals>
+    <plurals name="duplicate_three_options_secondary">
+        <item quantity="one">1 dintre elementele selectate se află deja în  \" %s \" playlist. </item>
+        <item quantity="few">%d  dintre elementele selectate se află deja în \" %s \" playlist .</item>
+        <item quantity="other">%d  dintre elementele selectate se află deja în \" %s \" de playlist .</item>
+    </plurals>
     <string name="official_website">Site-ul oficial</string>
     <string name="view_online">Vizualizare online</string>
     <string name="player_under_notch">Afișează videoclipul sub crestătură</string>
@@ -1120,6 +1121,8 @@
 
 
 
+    <!--    accessibility-->
+    <string name="talkback_media_content_description">%1$s - titlu: %2$s - durată: %3$s</string>
     <string name="talkback_genre">Gen: %s</string>
     <string name="talkback_history_item">Element de istoric</string>
     <string name="talkback_playlist">Listă de redare: %s</string>
@@ -1146,6 +1149,7 @@
     <string name="talkback_video_tracks">Piste video</string>
     <string name="talkback_audio_tracks">Piste audio</string>
     <string name="talkback_subtitle_tracks">Piste de subtitrări</string>
+    <string name="talkback_subtitle_dowload_item">Limba: %1$s. %2$s. Numele: %3$s</string>
     <string name="selected">Selectat</string>
     <string name="talkback_increase_delay">Crește întârzierea</string>
     <string name="talkback_decrease_delay">Scade întârzierea</string>
@@ -1157,6 +1161,8 @@
     <string name="talkback_audio_player_collapsed">Player audio restrâns</string>
     <string name="talkback_audio_player_closed">Player audio închis</string>
     <string name="talkback_audio_player">Player audio. În prezent se redă: %s</string>
+    <string name="talkback_out_of">%1$s din %2$s</string>
+    <string name="talkback_track_index">Pista %1$s din %2$s</string>
     <string name="downloaded">Descărcat</string>
     <string name="not_downloaded">Nedescărcat</string>
     <string name="downloading">Se descarcă</string>
@@ -1228,4 +1234,12 @@
     <string name="podcast_mode_help">Comenzile podcastului apar la redarea unei singure piese care îndeplinește unul dintre următoarele criterii:\n\t• Durată mai mare de 60 de minute\n\t• Durată mai mare de 15 minute fără nume de album\n\t• Genul este %s</string>
     <string name="voice_control">Control vocal</string>
     <string name="voice_control_help">VLC poate fi controlat prin Asistentul Google rostind următoarele comenzi:\n\t• Redare, Pauză, Oprire, Anterior, Următorul\n\t• Derulare înapoi, Derulare rapidă înainte, Repetare &lt;toate|una|oprit&gt;\n\t • Salt la &lt;timp&gt;, Omite &lt;durata&gt;\n\t• Ce este acest &lt;artist|album|melodie&gt;\n\t• Redare [artist|album|cântec|gen|listă de redare] &lt;nume&gt;</string>
+
+    <string name="network" >Rețea</string>
+    <string name="metered_connection">Acțiune pentru fluxuri atunci când conexiunea este măsurată</string>
+    <string name="metered_do_nothing">Nu face nimic</string>
+    <string name="metered_stop">Oprește redarea</string>
+    <string name="metered_warn">Avertizează-mă (avertismentul poate fi ratat pentru redarea audio)</string>
+    <string name="metered_connection_stopped">Fișierul media s-a oprit deoarece conexiunea este măsurată</string>
+    <string name="metered_connection_warning">Conexiunea dvs. este măsurată. Se pot aplica taxe.</string>
 </resources>

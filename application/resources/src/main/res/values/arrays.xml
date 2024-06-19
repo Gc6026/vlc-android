@@ -3,6 +3,7 @@
     <string-array name="server_protocols">
         <item>FTP</item>
         <item>FTPS</item>
+        <item>FTPES</item>
         <item>SFTP</item>
         <!--<item>HTTP</item>-->
         <!--<item>HTTPS</item>-->
@@ -259,6 +260,17 @@
         <item>101</item>
         <item>103</item>
         <item>98</item>
+    </string-array>
+
+    <string-array name="metered_connection_list">
+        <item>@string/metered_do_nothing</item>
+        <item>@string/metered_stop</item>
+        <item>@string/metered_warn</item>
+    </string-array>
+    <string-array name="metered_connection_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
     <string-array name="list_title_ellipsize_list">

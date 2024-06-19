@@ -23,28 +23,14 @@
     <string name="searchable_hint">Sök…</string>
     <string name="history">Historik</string>
 
-    <string name="sortby_name_asc">Namn A → Ö</string>
-    <string name="sortby_name_desc">Namn Ö → A</string>
-    <string name="sortby_artist_name_asc">Artistnamn A → Ö</string>
-    <string name="sortby_artist_name_desc">Artistnamn Ö → A</string>
-    <string name="sortby_album_name_asc">Albumnamn A → Ö</string>
-    <string name="sortby_album_name_desc">Albumnamn Ö → A</string>
-    <string name="sortby_filename_asc">Filnamn A → Ö</string>
-    <string name="sortby_filename_desc">Filnamn Ö → A</string>
+    <string name="sort_alpha_asc">A → Ö</string>
+    <string name="sort_alpha_desc">Ö → A</string>
     <string name="sortby_length_asc">Kortast först</string>
     <string name="sortby_length_desc">Längst först</string>
-    <string name="sortby_date_asc">Äldst datum först</string>
-    <string name="sortby_date_desc">Senast datum först</string>
-    <string name="sortby_last_modified_date_asc">Äldst tillagda först</string>
-    <string name="sortby_last_modified_date_desc">Senast tillagda först</string>
-    <string name="sortby_number_asc">Större videogrupper längst upp</string>
-    <string name="sortby_number_desc">Mindre videogrupper längst upp</string>
-    <string name="sortby_date_insertion_asc">Äldsta skapandedatum först</string>
-    <string name="sortby_date_insertion_desc">Senaste skapandedatum först</string>
-    <string name="sortby_date_last_modified_asc">Äldsta ändringsdatum först</string>
-    <string name="sortby_date_last_modified_desc">Senaste ändringsdatum först</string>
-    <string name="sortby_date_release_asc">Äldsta utgivningsdatum först</string>
-    <string name="sortby_date_release_desc">Senasta utgivningsdatum först</string>
+    <string name="sortby_number_asc">Större videogrupper</string>
+    <string name="sortby_number_desc">Mindre videogrupper</string>
+    <string name="sort_date_asc">Äldst först</string>
+    <string name="sort_date_desc">Nyast först</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="one">%d resultat hittades</item>
@@ -203,6 +189,8 @@
     <string name="jump_to_time">Hoppa till tid</string>
     <string name="subtitle_select">Välj undertextfil</string>
     <string name="wait_before_sleep">Vänta på att nuvarande mediaobjekt slutförs först</string>
+    <string name="reset_on_interaction">Återställ vid interaktion</string>
+    <string name="default_sleep_timer_summary">%1$s, vänta på att media ska sluta: %2$s, återställ vid interaktion: %3$s</string>
 
     <string name="server_add_title">Lägg till en ny server i favoriter</string>
     <string name="server_domain_hint">Serveradress (domännamn eller IP)</string>
@@ -536,7 +524,7 @@
     <string name="restart_message">Ändringarna kommer att träda i kraft när applikationen har startats om.\n\nStarta om nu?</string>
     <string name="restart_message_OK">OK</string>
     <string name="restart_message_Later">Senare</string>
-    <string name="browser_show_all_title">Visa alla filer</string>
+    <string name="browser_show_all_title">Visa endast multimediafiler</string>
 
     <string name="developer_prefs_category">Utvecklare</string>
     <string name="enable_verbose_mode">Detaljerad loggdata</string>
@@ -553,6 +541,7 @@
     <string name="dump_logcat">Spara logg</string>
     <string name="dump_logcat_success">Logcat sparades till %1$s!</string>
     <string name="dump_logcat_failure">Misslyckades att spara logcat.</string>
+    <string name="http_user_agent">HTTP-användaragent</string>
     <string name="custom_libvlc_options">Anpassade libVLC-alternativ</string>
     <string name="custom_libvlc_options_invalid">Ogiltiga libVLC-alternativ!</string>
 
@@ -949,6 +938,7 @@
     <string name="mark_as_played">Markera som uppspelad</string>
     <string name="mark_as_not_played">Markera som ej uppspelad</string>
     <string name="mark_all_as_played">Markera alla som uppspelade</string>
+    <string name="mark_all_as_not_played">Markera alla som ej uppspelade</string>
     <string name="new_group">Ny grupp</string>
     <string name="new_group_desc">Skapa en ny grupp</string>
 
@@ -1230,4 +1220,12 @@
     <string name="podcast_mode_help">Podcast-kontroller visas när enstaka spår som uppfyller ett av följande kriterier spelas upp:\n\t• Längd på minst 60 min\n\t• Längd på minst 15 min utan albumnamn\n\t• Genren är %s</string>
     <string name="voice_control">Röststyrning</string>
     <string name="voice_control_help">VLC kan styras via Google Assistant genom att säga följande kommandon:\n\t• Play, Pause, Stop, Previous, Next\n\t• Rewind, Fast Forward, Repeat &lt;all|one|off&gt;\n\t• Jump to &lt;tidpunkt&gt;, Skip &lt;varaktighet&gt;\n\t• What\'s this &lt;artist|album|song&gt;\n\t• Play [artist|album|song|genre|playlist] &lt;namn&gt;</string>
+
+    <string name="network" >Nätverk</string>
+    <string name="metered_connection">Strömåtgärder vid anslutning med datapriser</string>
+    <string name="metered_do_nothing">Gör ingenting</string>
+    <string name="metered_stop">Stoppa uppspelningen</string>
+    <string name="metered_warn">Varna mig (under ljuduppspelning kan man missa varningen)</string>
+    <string name="metered_connection_stopped">Media stoppades på grund av anslutning med datapriser</string>
+    <string name="metered_connection_warning">Du har en anslutning med datapriser. Avgifter kan tillkomma.</string>
 </resources>

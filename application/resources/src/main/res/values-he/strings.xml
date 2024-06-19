@@ -23,28 +23,14 @@
     <string name="searchable_hint">חיפוש…</string>
     <string name="history">היסטוריה</string>
 
-    <string name="sortby_name_asc">שם א ← ת</string>
-    <string name="sortby_name_desc">שם ת ← א</string>
-    <string name="sortby_artist_name_asc">שם האמן א ← ת</string>
-    <string name="sortby_artist_name_desc">שם האמן ת ← א</string>
-    <string name="sortby_album_name_asc">שם האלבום א ← ת</string>
-    <string name="sortby_album_name_desc">שם האלבום ת ← א</string>
-    <string name="sortby_filename_asc">שם הקובץ א ← ת</string>
-    <string name="sortby_filename_desc">שם הקובץ ת ← א</string>
+    <string name="sort_alpha_asc">א ← ת</string>
+    <string name="sort_alpha_desc">ת ← א</string>
     <string name="sortby_length_asc">הקצרים ביותר בהתחלה</string>
     <string name="sortby_length_desc">הארוכים ביותר בהתחלה</string>
-    <string name="sortby_date_asc">התאריך הישן ביותר בהתחלה</string>
-    <string name="sortby_date_desc">התאריך החדש ביותר בהתחלה</string>
-    <string name="sortby_last_modified_date_asc">התוספת האחרונה בהתחלה</string>
-    <string name="sortby_last_modified_date_desc">התוספת העדכנית בהתחלה</string>
-    <string name="sortby_number_asc">עוד סרטונים בקבוצה קודם לכן</string>
-    <string name="sortby_number_desc">פחות סרטונים בקבוצה קודם לכן</string>
-    <string name="sortby_date_insertion_asc">תאריך הוספה קדום ראשון</string>
-    <string name="sortby_date_insertion_desc">תאריך הוספה עדכני ראשון</string>
-    <string name="sortby_date_last_modified_asc">תאריך שינוי קדום ראשון</string>
-    <string name="sortby_date_last_modified_desc">תאריך שינוי עדכני ראשון</string>
-    <string name="sortby_date_release_asc">תאריך שחרור קדום ראשון</string>
-    <string name="sortby_date_release_desc">תאריך שחרור עדכני ראשון</string>
+    <string name="sortby_number_asc">יותר סרטונים בקבוצה</string>
+    <string name="sortby_number_desc">פחות סרטונים בקבוצה</string>
+    <string name="sort_date_asc">הישנים ביותר בהתחלה</string>
+    <string name="sort_date_desc">החדשים ביותר בהתחלה</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="one">נמצאה תוצאה אחת</item>
@@ -218,7 +204,7 @@
     <string name="jump_to_time">קפיצה לזמן</string>
     <string name="subtitle_select">בחירת קובץ כתוביות</string>
     <string name="wait_before_sleep">להמתין לסיום פריט המדיה הנוכחי</string>
-
+    <string name="reset_on_interaction">איפוס עם כל מחוות תפעול</string>
     <string name="server_add_title">הוספת שרת חדש למועדפים</string>
     <string name="server_domain_hint">כתובת השרת (שם מתחם או IP)</string>
     <string name="server_share_hint">שם השיתוף ברשת (או כתובת IP)</string>
@@ -551,7 +537,7 @@
     <string name="restart_message">השינויים יחולו עם הפעלת היישום מחדש.\n\nלהפעיל מחדש כעת?</string>
     <string name="restart_message_OK">אישור</string>
     <string name="restart_message_Later">אחר כך</string>
-    <string name="browser_show_all_title">הצגת כל הקבצים</string>
+    <string name="browser_show_all_title">הצגת קובצי מולטימדיה בלבד</string>
 
     <string name="developer_prefs_category">למתכנתים</string>
     <string name="enable_verbose_mode">פירוט</string>
@@ -568,6 +554,7 @@
     <string name="dump_logcat">שמירת רישום logcat</string>
     <string name="dump_logcat_success">ה־Logcat נשמר בהצלחה אל %1$s!</string>
     <string name="dump_logcat_failure">שמירת ה־logcat נכשלה.</string>
+    <string name="http_user_agent">סוכן משתמש HTTP</string>
     <string name="custom_libvlc_options">אפשרויות מיוחדות ל־libVLC</string>
     <string name="custom_libvlc_options_invalid">אפשרויות libVLC שגויות!</string>
 
@@ -966,6 +953,7 @@
     <string name="mark_as_played">לסמן כהתנגן</string>
     <string name="mark_as_not_played">סימון כטרם התנגן</string>
     <string name="mark_all_as_played">לסמן הכול כהתנגן</string>
+    <string name="mark_all_as_not_played">סימון הכול כטרם נוגן</string>
     <string name="new_group">קבוצה חדשה</string>
     <string name="new_group_desc">יצירת קבוצה חדשה</string>
 
@@ -1251,4 +1239,7 @@
     <string name="podcast_mode_help">פקדי הסתכים מופיעים בעת נגינה של רצועה בודדת שעונה על אחד מהתנאים הבאים:\n\t• האורך עולה על 60 דקות\n\t• האורך עולה על 15 דקות ואין שם אלבום\n\t• הסוגה היא %s</string>
     <string name="voice_control">שליטה קולית</string>
     <string name="voice_control_help">אפשר לשלוט ב־VLC באמצעות Google Assistant על ידי אמירת הפקודות האלה בקול רם (אין תמיכה בעברית עדיין):\n\t• Play, Pause, Stop, Previous, Next\n\t• Rewind, Fast Forward, Repeat &lt;all|one|off&gt;\n\t• Jump to &lt;time&gt;, Skip &lt;duration&gt;\n\t• What\'s this &lt;artist|album|song&gt;\n\t• Play [artist|album|song|genre|playlist] &lt;name&gt;</string>
-</resources>
+
+    <string name="network" >רשת</string>
+    <string name="metered_do_nothing">לא לעשות כלום</string>
+    </resources>

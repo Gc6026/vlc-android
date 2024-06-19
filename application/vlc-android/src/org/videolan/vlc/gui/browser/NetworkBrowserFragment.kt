@@ -88,7 +88,7 @@ class NetworkBrowserFragment : BaseBrowserFragment(), IDialogManager {
         item.isVisible = !isRootDirectory
         lifecycleScope.launchWhenStarted {
             val isFavorite = mrl != null && browserFavRepository.browserFavExists(mrl!!.toUri())
-            item.setIcon(if (isFavorite) R.drawable.ic_am_favorite else R.drawable.ic_am_favorite_outline)
+            item.setIcon(if (isFavorite) R.drawable.ic_fav_remove else R.drawable.ic_fav_add)
             item.setTitle(if (isFavorite) R.string.favorites_remove else R.string.favorites_add)
             mrl?.let {
                 val isScanned = withContext(Dispatchers.IO) { MedialibraryUtils.isScanned(it) }
@@ -103,6 +103,11 @@ class NetworkBrowserFragment : BaseBrowserFragment(), IDialogManager {
         fabPlay?.setImageResource(if (isRootDirectory) R.drawable.ic_fab_add else R.drawable.ic_fab_play)
         fabPlay?.contentDescription = getString(if (isRootDirectory) R.string.add else R.string.play)
         fabPlay?.setOnClickListener { onFabPlayClick(it) }
+    }
+
+    override fun onDestroyView() {
+        (requireActivity() as? SecondaryActivity)?.setSupportActionBar(null)
+        super.onDestroyView()
     }
 
     override fun refresh() {

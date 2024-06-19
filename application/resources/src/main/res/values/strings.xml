@@ -24,28 +24,14 @@
     <string name="searchable_hint">Search…</string>
     <string name="history">History</string>
 
-    <string name="sortby_name_asc">Name A → Z</string>
-    <string name="sortby_name_desc">Name Z → A</string>
-    <string name="sortby_artist_name_asc">Artist name A → Z</string>
-    <string name="sortby_artist_name_desc">Artist name Z → A</string>
-    <string name="sortby_album_name_asc">Album name A → Z</string>
-    <string name="sortby_album_name_desc">Album name Z → A</string>
-    <string name="sortby_filename_asc">File name A → Z</string>
-    <string name="sortby_filename_desc">File name Z → A</string>
+    <string name="sort_alpha_asc">A → Z</string>
+    <string name="sort_alpha_desc">Z → A</string>
     <string name="sortby_length_asc">Shortest first</string>
     <string name="sortby_length_desc">Longest first</string>
-    <string name="sortby_date_asc">Oldest date first</string>
-    <string name="sortby_date_desc">Newest date first</string>
-    <string name="sortby_last_modified_date_asc">Oldest addition first</string>
-    <string name="sortby_last_modified_date_desc">Newest addition first</string>
-    <string name="sortby_number_asc">More videos in group first</string>
-    <string name="sortby_number_desc">Less videos in group first </string>
-    <string name="sortby_date_insertion_asc">Oldest insertion date first</string>
-    <string name="sortby_date_insertion_desc">Newest insertion date first</string>
-    <string name="sortby_date_last_modified_asc">Oldest modification date first</string>
-    <string name="sortby_date_last_modified_desc">Newest modification date first</string>
-    <string name="sortby_date_release_asc">Oldest release date first</string>
-    <string name="sortby_date_release_desc">Newest release date first</string>
+    <string name="sortby_number_asc">More videos in group</string>
+    <string name="sortby_number_desc">Less videos in group</string>
+    <string name="sort_date_asc">Oldest first</string>
+    <string name="sort_date_desc">Newest first</string>
 
     <plurals name="search_found_results_quantity">
         <item quantity="one">%d result found</item>
@@ -204,6 +190,8 @@
     <string name="jump_to_time">Jump to Time</string>
     <string name="subtitle_select">Select subtitle file</string>
     <string name="wait_before_sleep">Wait for current media item to finish first</string>
+    <string name="reset_on_interaction">Reset on any interaction</string>
+    <string name="default_sleep_timer_summary">%1$s, wait media end: %2$s, reset on interaction: %3$s</string>
 
     <string name="server_add_title">Add a new server to favorites</string>
     <string name="server_domain_hint">Server address (domain name or IP)</string>
@@ -468,6 +456,8 @@
     <string name="audio_ducking_summary">Helps to hear audio notifications, navigation instructions or assistant talking</string>
     <string name="casting_category">Casting</string>
     <string name="remote_access">Remote access</string>
+    <string name="remote_access_version_title">Remote access version</string>
+    <string name="remote_access_hash_title">Remote access hash</string>
     <string name="remote_access_status">Server status</string>
     <string name="remote_access_status_summary">Tap to see the server status</string>
     <string name="remote_access_connections">Connections</string>
@@ -553,7 +543,7 @@
     <string name="restart_message">Changes will take effect once application has restarted.\n\nRestart now?</string>
     <string name="restart_message_OK">OK</string>
     <string name="restart_message_Later">Later</string>
-    <string name="browser_show_all_title">Show all files</string>
+    <string name="browser_show_all_title">Show only multimedia files</string>
 
     <string name="developer_prefs_category">Developer</string>
     <string name="enable_verbose_mode">Verbose</string>
@@ -570,8 +560,11 @@
     <string name="dump_logcat">Dump logcat log</string>
     <string name="dump_logcat_success">Logcat successfully dumped to %1$s!</string>
     <string name="dump_logcat_failure">Failed to dump logcat.</string>
+    <string name="http_user_agent">HTTP user agent</string>
     <string name="custom_libvlc_options">Custom libVLC options</string>
     <string name="custom_libvlc_options_invalid">Invalid libVLC options!</string>
+    <string name="dav1d_thread_number">Dav1d thread number</string>
+    <string name="dav1d_thread_number_invalid">Invalid thread number! (>=1)</string>
 
     <string name="serious_crash">Unfortunately, a serious error has occurred and VLC had to close.</string>
     <string name="help_us_send_log">Help us improving VLC by sending the following crash log:</string>
@@ -967,6 +960,7 @@
     <string name="mark_as_played">Mark as played</string>
     <string name="mark_as_not_played">Mark as not played</string>
     <string name="mark_all_as_played">Mark all as played</string>
+    <string name="mark_all_as_not_played">Mark all as not played</string>
     <string name="new_group">New group</string>
     <string name="new_group_desc">Create a new group</string>
 
@@ -1250,4 +1244,12 @@
     <string name="podcast_mode_genres" translatable="false">audiobook(s), podcast, speech, or vocal</string>
     <string name="voice_control">Voice control</string>
     <string name="voice_control_help">VLC can be controlled through Google Assistant by speaking the following commands:\n\t• Play, Pause, Stop, Previous, Next\n\t• Rewind, Fast Forward, Repeat &lt;all|one|off&gt;\n\t• Jump to &lt;time&gt;, Skip &lt;duration&gt;\n\t• What\'s this &lt;artist|album|song&gt;\n\t• Play [artist|album|song|genre|playlist] &lt;name&gt;</string>
+
+    <string name="network" >Network</string>
+    <string name="metered_connection">Action for streams when the connection is metered</string>
+    <string name="metered_do_nothing">Do nothing</string>
+    <string name="metered_stop">Stop playback</string>
+    <string name="metered_warn">Warn me (the warning may be missed for audio playback)</string>
+    <string name="metered_connection_stopped">Media stopped because the connection is metered</string>
+    <string name="metered_connection_warning">Your connection is metered. Fees may apply.</string>
 </resources>

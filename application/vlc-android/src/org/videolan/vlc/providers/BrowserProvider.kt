@@ -61,6 +61,7 @@ import org.videolan.medialibrary.media.Storage
 import org.videolan.resources.VLCInstance
 import org.videolan.resources.util.HeaderProvider
 import org.videolan.tools.AppScope
+import org.videolan.tools.BROWSER_SHOW_ONLY_MULTIMEDIA
 import org.videolan.tools.CoroutineContextProvider
 import org.videolan.tools.DependencyProvider
 import org.videolan.tools.Settings
@@ -70,6 +71,7 @@ import org.videolan.vlc.util.ModelsHelper
 import org.videolan.vlc.util.TextUtils
 import org.videolan.vlc.util.ascComp
 import org.videolan.vlc.util.descComp
+import org.videolan.vlc.util.determineMaxNbOfDigits
 import org.videolan.vlc.util.fileReplacementMarker
 import org.videolan.vlc.util.folderReplacementMarker
 import org.videolan.vlc.util.getFilenameAscComp
@@ -94,7 +96,7 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
     private var discoveryJob : Job? = null
 
     private val foldersContentMap = SimpleArrayMap<MediaLibraryItem, MutableList<MediaLibraryItem>>()
-    private var showAll = Settings.getInstance(context).getBoolean("browser_show_all_files", true)
+    private var showOnlyMultimedia = Settings.getInstance(context).getBoolean(BROWSER_SHOW_ONLY_MULTIMEDIA, false)
 
     val descriptionUpdate = MutableLiveData<Pair<Int, String>>()
     internal val medialibrary = Medialibrary.getInstance()
@@ -106,14 +108,14 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
         (sort == Medialibrary.SORT_FILENAME || sort == Medialibrary.SORT_DEFAULT) && desc -> true
         else -> true
     }
-    fun getComparator(): Comparator<MediaLibraryItem>? = when {
-            Settings.showTvUi && sort in arrayOf(Medialibrary.SORT_ALPHA, Medialibrary.SORT_DEFAULT, Medialibrary.SORT_FILENAME) && desc -> getTvDescComp(Settings.tvFoldersFirst)
-            Settings.showTvUi && sort in arrayOf(Medialibrary.SORT_ALPHA, Medialibrary.SORT_DEFAULT, Medialibrary.SORT_FILENAME) && !desc -> getTvAscComp(Settings.tvFoldersFirst)
+    fun getComparator(nbOfDigits: Int): Comparator<MediaLibraryItem>? = when {
+            Settings.showTvUi && sort in arrayOf(Medialibrary.SORT_ALPHA, Medialibrary.SORT_DEFAULT) && desc -> getTvDescComp(Settings.tvFoldersFirst)
+            Settings.showTvUi && sort in arrayOf(Medialibrary.SORT_ALPHA, Medialibrary.SORT_DEFAULT) && !desc -> getTvAscComp(Settings.tvFoldersFirst)
             url != null && Uri.parse(url)?.scheme == "upnp" -> null
             sort == Medialibrary.SORT_ALPHA && desc -> descComp
             sort == Medialibrary.SORT_ALPHA && !desc -> ascComp
-            (sort == Medialibrary.SORT_FILENAME || sort == Medialibrary.SORT_DEFAULT) && desc -> getFilenameDescComp()
-            else -> getFilenameAscComp()
+            (sort == Medialibrary.SORT_FILENAME || sort == Medialibrary.SORT_DEFAULT) && desc -> getFilenameDescComp(nbOfDigits)
+            else -> getFilenameAscComp(nbOfDigits)
         }
 
     init {
@@ -161,7 +163,7 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
         if (mediabrowser == null) {
             registerCreator { MediaBrowser(VLCInstance.getInstance(context), null, browserHandler) }
             mediabrowser = get(this)
-            if (showAll) mediabrowser?.setIgnoreFileTypes(".")
+            if (!showOnlyMultimedia) mediabrowser?.setIgnoreFileTypes(".")
         }
     }
 
@@ -209,7 +211,7 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
      * @param files the files to sort
      */
     fun sort(files: MutableList<MediaLibraryItem>) {
-        getComparator()?.let { files.apply { this.sortWith(it) } } ?: if (desc) files.apply { reverse() } else { }
+        getComparator(if (isComparatorAboutFilename())  files.determineMaxNbOfDigits() else 0)?.let { files.apply { this.sortWith(it) } } ?: if (desc) files.apply { reverse() } else { }
     }
 
     suspend fun browseUrl(url: String): List<MediaLibraryItem> {
@@ -263,7 +265,7 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
     }.buffer(Channel.UNLIMITED)
 
     open fun addMedia(media: MediaLibraryItem) {
-        getComparator()?.let { dataset.add(media, it) } ?: dataset.add(media)
+        getComparator(if (isComparatorAboutFilename())  dataset.value.determineMaxNbOfDigits() else 0)?.let { dataset.add(media, it) } ?: dataset.add(media)
     }
 
     open fun refresh() {
@@ -386,9 +388,9 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
         }
         media.release()
         if (!mw.isMedia()) {
-            if (showAll || mw.isBrowserMedia()) return mw
+            if (!showOnlyMultimedia || mw.isBrowserMedia()) return mw
             if (mw.isBrowserMedia()) return mw
-            else if (!showAll) return null
+            else if (showOnlyMultimedia) return null
         }
         val uri = mw.uri
         if ((mw.type == MediaWrapper.TYPE_AUDIO || mw.type == MediaWrapper.TYPE_VIDEO)) return withContext(coroutineContextProvider.IO) {
@@ -423,7 +425,7 @@ abstract class BrowserProvider(val context: Context, val dataset: LiveDataset<Me
     }
 
     fun updateShowAllFiles(value: Boolean) {
-        showAll = value
+        showOnlyMultimedia = value
         refresh()
     }
 
