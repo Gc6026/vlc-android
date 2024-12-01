@@ -82,6 +82,7 @@ import org.videolan.tools.BROWSER_SHOW_HIDDEN_FILES
 import org.videolan.tools.BROWSER_SHOW_ONLY_MULTIMEDIA
 import org.videolan.tools.FORCE_PLAY_ALL_AUDIO
 import org.videolan.tools.FORCE_PLAY_ALL_VIDEO
+import org.videolan.tools.KeyHelper
 import org.videolan.tools.MultiSelectHelper
 import org.videolan.tools.Settings
 import org.videolan.tools.dp
@@ -197,17 +198,6 @@ abstract class BaseBrowserFragment : MediaBrowserFragment<BrowserModel>(), IRefr
         }
         isRootDirectory = defineIsRoot()
         browserFavRepository = BrowserFavRepository.getInstance(requireContext())
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                needRefresh.observe(this@BaseBrowserFragment) {
-
-                    if (it) {
-                        viewModel.refreshMW()
-                        needRefresh.postValue(false)
-                    }
-                }
-            }
-        }
     }
 
     private fun manageDisplay() {
@@ -287,6 +277,17 @@ abstract class BaseBrowserFragment : MediaBrowserFragment<BrowserModel>(), IRefr
         }
 
         inCards = Settings.getInstance(requireActivity()).getBoolean(BROWSER_DISPLAY_IN_CARDS, false)
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                needRefresh.observe(viewLifecycleOwner) {
+
+                    if (it) {
+                        viewModel.refreshMW()
+                        needRefresh.postValue(false)
+                    }
+                }
+            }
+        }
     }
 
     override fun onDisplaySettingChanged(key: String, value: Any) {
@@ -690,6 +691,10 @@ abstract class BaseBrowserFragment : MediaBrowserFragment<BrowserModel>(), IRefr
     }
 
     override fun onClick(v: View, position: Int, item: MediaLibraryItem) {
+        if (KeyHelper.isShiftPressed || KeyHelper.isCtrlPressed) {
+            onLongClick(v, position, item)
+            return
+        }
         val mediaWrapper = item as MediaWrapper
         if (actionMode != null) {
             if (mediaWrapper.type == MediaWrapper.TYPE_AUDIO ||

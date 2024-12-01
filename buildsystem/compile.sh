@@ -36,6 +36,7 @@ while [ $# -gt 0 ]; do
             echo "Use -c to get a ChromeOS build"
             echo "Use -l to build only LibVLC"
             echo "Use -b to bypass libvlc source checks (vlc custom sources)"
+            echo "Use -t to use prebuilt contribs for LibVLC"
             echo "Use -m2 to set the maven local repository path to use"
             echo "Use -tv to include the TV module"
             exit 0
@@ -66,6 +67,9 @@ while [ $# -gt 0 ]; do
         -l)
             BUILD_LIBVLC=1
             NO_ML=1
+            ;;
+        -t)
+            PREBUILT_CONTRIBS=1
             ;;
         -ml)
             BUILD_MEDIALIB=1
@@ -116,18 +120,28 @@ fi
 if [ -z "$ANDROID_ABI" ]; then
    diagnostic "*** No ANDROID_ABI defined architecture: using arm64-v8a"
    ANDROID_ABI="arm64-v8a"
+   ARCH="arm64"
+   TRIPLET="aarch64-linux-android"
 fi
 
 if [ "$ANDROID_ABI" = "armeabi-v7a" -o "$ANDROID_ABI" = "arm" ]; then
     ANDROID_ABI="armeabi-v7a"
     GRADLE_ABI="ARMv7"
+    ARCH="arm"
+    TRIPLET="arm-linux-androideabi"
 elif [ "$ANDROID_ABI" = "arm64-v8a" -o "$ANDROID_ABI" = "arm64" ]; then
     ANDROID_ABI="arm64-v8a"
     GRADLE_ABI="ARMv8"
+    ARCH="arm64"
+    TRIPLET="aarch64-linux-android"
 elif [ "$ANDROID_ABI" = "x86" ]; then
     GRADLE_ABI="x86"
+    ARCH="x86"
+    TRIPLET="i686-linux-android"
 elif [ "$ANDROID_ABI" = "x86_64" ]; then
     GRADLE_ABI="x86_64"
+    ARCH="x86_64"
+    TRIPLET="x86_64-linux-android"
 else
     diagnostic "Invalid arch specified: '$ANDROID_ABI'."
     diagnostic "Try --help for more information"
@@ -245,8 +259,8 @@ fi
 
 if [ ! -d "gradle/wrapper" ]; then
     diagnostic "Downloading gradle"
-    GRADLE_VERSION=8.6
-    GRADLE_SHA256=9631d53cf3e74bfa726893aee1f8994fee4e060c401335946dba2156f440f24c
+    GRADLE_VERSION=8.7
+    GRADLE_SHA256=544c35d6bd849ae8a5ed0bcea39ba677dc40f49df7d1835561582da2009b961d
     GRADLE_URL=https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
     wget ${GRADLE_URL} 2>/dev/null || curl -O ${GRADLE_URL} || fail "gradle: download failed"
     echo $GRADLE_SHA256 gradle-${GRADLE_VERSION}-bin.zip | sha256sum -c || fail "gradle: hash mismatch"
@@ -266,11 +280,11 @@ fi
 
 
 if [ "$FORCE_VLC_4" = 1 ]; then
-    LIBVLCJNI_TESTED_HASH=6337b790b501a9c132fdc7ec1a0c04313738cd96
+    LIBVLCJNI_TESTED_HASH=d12898a97f7fb7ee5a7882cdfb901496ed54ea08
 else
-    LIBVLCJNI_TESTED_HASH=24c0047f5697cc96e89ac86e2557ce319fc43c86
+    LIBVLCJNI_TESTED_HASH=fef5039810febe5a76d7766c2e748b25736a5106
 fi
-LIBVLCJNI_REPOSITORY=https://code.videolan.org/videolan/libvlcjni
+LIBVLCJNI_REPOSITORY=https://code.videolan.org/videolan/libvlcjni.git
 
 : ${VLC_LIBJNI_PATH:="$(pwd -P)/libvlcjni"}
 
@@ -324,8 +338,16 @@ OUT_DBG_DIR=.dbg/${ANDROID_ABI}
 mkdir -p $OUT_DBG_DIR
 
 if [ "$BUILD_MEDIALIB" != 1 -o ! -d "${VLC_LIBJNI_PATH}/libvlc/jni/libs/" ]; then
-    AVLC_SOURCED=1 . ${VLC_LIBJNI_PATH}/buildsystem/compile-libvlc.sh
-    avlc_build
+    if [ "$PREBUILT_CONTRIBS" = 1 ];then
+        VLC_CONTRIB_SHA="$(cd ${VLC_LIBJNI_PATH}/vlc && extras/ci/get-contrib-sha.sh android-${ARCH})"
+        if [ "$FORCE_VLC_4" = 1 ]; then
+            export VLC_PREBUILT_CONTRIBS_URL="https://artifacts.videolan.org/vlc/android-${ARCH}/vlc-contrib-${TRIPLET}-${VLC_CONTRIB_SHA}.tar.bz2"
+        else
+            export VLC_PREBUILT_CONTRIBS_URL="https://artifacts.videolan.org/vlc-3.0/android-${ARCH}/vlc-contrib-${TRIPLET}-${VLC_CONTRIB_SHA}.tar.bz2"
+        fi
+        if ${VLC_LIBJNI_PATH}/vlc/extras/ci/check-url.sh "$VLC_PREBUILT_CONTRIBS_URL"; then CONTRIB_FLAGS="--with-prebuilt-contribs"; fi
+    fi
+    ${VLC_LIBJNI_PATH}/buildsystem/compile-libvlc.sh -a ${ARCH} ${CONTRIB_FLAGS}
 
     cp -a ${VLC_LIBJNI_PATH}/libvlc/jni/obj/local/${ANDROID_ABI}/*.so ${OUT_DBG_DIR}
 fi
@@ -372,10 +394,6 @@ else
     TARGET="${ACTION}${BUILDTYPE}"
     GRADLE_VLC_SRC_DIRS="$GRADLE_VLC_SRC_DIRS" CLI="" GRADLE_ABI=$GRADLE_ABI ./gradlew ${gradle_prop} -Dmaven.repo.local=$M2_REPO $TARGET
     if [ "$BUILDTYPE" = "Release" -a "$ACTION" = "assemble" ]; then
-        TARGET="bundle${BUILDTYPE}"
-        GRADLE_VLC_SRC_DIRS="$GRADLE_VLC_SRC_DIRS" CLI="" GRADLE_ABI=$GRADLE_ABI ./gradlew ${gradle_prop} -Dmaven.repo.local=$M2_REPO $TARGET
-    fi
-    if [ "$BUILDTYPE" = "NoTv" -a "$ACTION" = "assemble" ]; then
         TARGET="bundle${BUILDTYPE}"
         GRADLE_VLC_SRC_DIRS="$GRADLE_VLC_SRC_DIRS" CLI="" GRADLE_ABI=$GRADLE_ABI ./gradlew ${gradle_prop} -Dmaven.repo.local=$M2_REPO $TARGET
     fi

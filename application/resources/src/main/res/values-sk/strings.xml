@@ -186,6 +186,7 @@
     <string name="track_codec_info">Kodek: %1$s\n</string>
     <string name="track_language_info">Jazyk: %1$s\n</string>
     <string name="volume">Hlasitosť</string>
+    <string name="system_volume_disabled">%s\nŽiadny prístup k systémovej jednotke</string>
     <string name="sound_on">Zap. zvuk</string>
     <string name="sound_off">Vyp. zvuk</string>
     <string name="brightness">Jas</string>
@@ -209,6 +210,11 @@
     <string name="jump_to_time">Preskočiť na čas</string>
     <string name="subtitle_select">Vybrať súbor s titulkami</string>
     <string name="wait_before_sleep">Počkajte na skončenie aktuálnej mediálnej položky</string>
+    <string name="reset_on_interaction">Reset pri akejkoľvek interakcii</string>
+    <string name="default_sleep_timer_summary">%1$s, počkať na koniec média: %2$s, reset pri interakcii: %3$s</string>
+    <string name="video_player_remote">Prehrávač videa - vzdialený</string>
+    <string name="remote_keyboard_navigation">Navigovanie pomocou klávesnice</string>
+
     <string name="server_add_title">Pridať nový server do obľúbených</string>
     <string name="server_domain_hint">Adresa servera (názov domény alebo IP)</string>
     <string name="server_share_hint">Názov zdieľania v sieti (alebo IP adresa)</string>
@@ -297,6 +303,7 @@
     <string name="authors">Autori</string>
     <string name="vlc_authors">a autori VLC</string>
     <string name="is_compiled_by">Skompilované</string>
+    <string name="is_signed_by">Podpis: </string>
     <string name="sources">Zdrojový kód</string>
     <string name="libraries">Knižnice</string>
     <string name="feedback_forum">Fórum pre spätnú väzbu</string>
@@ -387,6 +394,11 @@
     <string name="browser_show_hidden_files_title">Zobraziť skryté súbory</string>
     <string name="albums_show_track_numbers">Zobrazovať čísla stopy</string>
     <string name="enable_video_screenshot">Zaznamenať screenshot</string>
+    <string name="enable_tap_and_hold_fastplay_title">Zapnúť Fastplay</string>
+    <string name="enable_tap_and_hold_fastplay_summary">Stlačením a držaním zvýšite rýchlosť prehrávania</string>
+    <string name="fastplay_speed_title">Rýchlosť Fastplay</string>
+    <string name="fastplay_title">Prehrávanie rýchlosťou %sx</string>
+    <string name="fastplay_subtitle">Uvoľnením zastavíte</string>
 
     <string name="subtitles_prefs_category">Titulky</string>
     <string name="subtitles_size_title">Veľkosť titulkov</string>
@@ -456,6 +468,8 @@
     <string name="audio_ducking_summary">Umožní počuť zvukové notifikácie, navigačné pokyny alebo rozprávanie asistenta</string>
     <string name="casting_category">Streamovanie</string>
     <string name="remote_access">Vzdialený prístup</string>
+    <string name="remote_access_version_title">Verzia prístupu na diaľku</string>
+    <string name="remote_access_hash_title">Hash pre prístup na diaľku</string>
     <string name="remote_access_status">Stav servera</string>
     <string name="remote_access_status_summary">Stav servera zobrazíte dotykom</string>
     <string name="remote_access_connections">Pripojenia</string>
@@ -561,6 +575,8 @@
     <string name="http_user_agent">Používateľský agent HTTP</string>
     <string name="custom_libvlc_options">Používateľské nastavenia libVLC</string>
     <string name="custom_libvlc_options_invalid">Neplatné nastavenia libVLC!</string>
+    <string name="dav1d_thread_number">Číslo vlákna Dav1d</string>
+    <string name="dav1d_thread_number_invalid">neplatné číslo vlákna! (>=1)</string>
 
     <string name="serious_crash">Bohužiaľ nastala závažná chyba a VLC bolo nutné ukončiť.</string>
     <string name="help_us_send_log">Pomôžte nám zlepšiť aplikáciu VLC zaslaním nasledujúceho záznamu o zlyhaní:</string>
@@ -592,10 +608,13 @@
     <string name="search_global">Hľadať v celej knižnici médií</string>
     <string name="playlist_save">Uložiť playlist</string>
     <string name="playlist_name_hint">Názov playlistu</string>
+    <string name="chapters">Kapitoly</string>
+    <string name="notset">Nenastavené</string>
     <string name="go_to_chapter">Prejsť na kapitolu…</string>
     <string name="current_chapter">Kapitola: %s</string>
     <string name="confirm_resume">Pokračovať od poslednej pozície?</string>
     <string name="confirm_resume_title">Pokračovať v prehrávaných videách</string>
+    <string name="confirm_resume_audio_title">Pokračovať v prehrávaní zvuku</string>
     <string name="tv_ui_title">Rozhranie Android TV</string>
     <string name="tv_ui_summary">Zmeniť UI na tému prispôsobenú TV</string>
     <string name="medialibrary">Knižnica médií</string>
@@ -605,6 +624,21 @@
     <string name="whats_new_title">Čo je nové vo VLC for Android %s</string>
     <string name="whats_new_36_webserver_text">S novou funkciou pre vzdialený prístup prevezmete ovládanie aplikácie VLC for Android z akéhokoľvek iného zariadenia.\nOdosielajte médiá obidvomi smermi, ovládajte prehrávanie a mnoho iného!</string>
     <string name="whats_new_36_favorites_text">Teraz môžete uprednostniť vaše médiá, playlisty, umelcov alebo albumy.\nNájdite preferovaný obsah ihneď, filtrovaním obsahu len podľa obľúbených položiek!</string>
+
+<!--    update-->
+    <string name="update_title">Je dostupná aktualizácia</string>
+    <string name="install_nightly_title">Nainštalovať nightly verziu</string>
+    <string name="update_text">Je dostupná nová nightly verzia aplikácie VLC for Android!\n\nToto upozornenie sa vám zobrazilo preto, že teraz používate verziu nightly.</string>
+    <string name="install_text">Nightly verzie sú automaticky aktualizované každý deň, s najaktuálnejšími funkciami a opravami.\n\nChcete stiahnuť túto verziu teraz?</string>
+
+    <string name="open_in_browser">Otvoriť v prehliadači</string>
+    <string name="install">Nainštalovať</string>
+    <string name="install_nightly">Nainštalovať nightly verziu</string>
+    <string name="install_nightly_alert">Nočné (nightly) zostavenia sú experimentálnymi verziami, ktoré sa aktualizujú každý deň.\n\nMôžete očakávať nové funkcie, ale aj nové chyby!</string>
+    <string name="nightly_version">Nájdená verzia: %2$s - %1$s</string>
+    <string name="update_nightly_alert">Spustili ste nightly verziu. Chcete pravidelne vyhľadávať aktualizácie?</string>
+    <string name="update_nightly">Automatická aktualizácia</string>
+    <string name="update_nightly_summary">Pravidelne vyhľadávať aktualizáciu nightly</string>
 
 
     <!-- Accessibility -->
@@ -866,6 +900,8 @@
     <string name="invalid_file">Neplatný súbor. Nemožno zdieľať.</string>
     <string name="share_file">Zdieľať %s</string>
     <string name="share_message">Tu je %s</string>
+    <string name="share_track_info">Zdieľať informáciu o stope</string>
+    <string name="share_track">Práve počúvate %s</string>
     <string name="find_metadata">Nájsť metadáta</string>
     <string name="moviepedia_hint">Vyhľadať metadáta</string>
     <string name="moviepedia_result">Výsledky pre video</string>
@@ -1253,4 +1289,16 @@
     <string name="metered_warn">Upozorniť ma (pri prehrávaní zvuku sa môže varovanie vynechať)</string>
     <string name="metered_connection_stopped">Médium bolo zastavené z dôvodu meraného pripojenia</string>
     <string name="metered_connection_warning">Vaše pripojenie je merané. Môžu vzniknúť dodatočné poplatky.</string>
+    <string name="adding">Pridávanie</string>
+    <string name="to">do</string>
+    <string name="device">Zariadenie</string>
+    <string name="connected_device">Pripojené zariadenie</string>
+    <string name="model">Model zariadenia</string>
+    <string name="prefs_app_data">Údaje aplikácie</string>
+    <string name="export_settings_summary">Exportujte nastavenia do súboru, aby ste ich mohli neskôr naimportovať</string>
+    <string name="export_settings">Exportovať nastavenia</string>
+    <string name="restore_settings_summary">Obnovte svoje nastavenia z predchádzajúceho exportu</string>
+    <string name="restore_settings">Obnoviť nastavenia</string>
+    <string name="export_settings_success">Nastavenia boli úspešne exportované do hlavného interného úložiska</string>
+    <string name="export_settings_failure">Počas exportovania nastavení došlo k chybe</string>
 </resources>

@@ -25,8 +25,10 @@
 package org.videolan.vlc.webserver
 
 import android.content.Context
+import android.os.Build
 import androidx.annotation.StringRes
 import org.json.JSONObject
+import org.videolan.vlc.BuildConfig
 
 object TranslationMapping {
     fun generateTranslations(context: Context): String {
@@ -34,6 +36,9 @@ object TranslationMapping {
         StringMapping.values().forEach {
             map[it.name] = context.getString(it.id).replace("%s", "{msg}")
         }
+        map["PORT"] = "android"
+        map["DEVICE_NAME"] = "${Build.MANUFACTURER} - ${Build.MODEL}"
+        map["APP_VERSION"] = BuildConfig.VLC_VERSION_NAME
         return JSONObject(map.toMap()).toString()
     }
 
@@ -51,6 +56,7 @@ object TranslationMapping {
         SEND_FILES(R.string.ra_send_files),
         DOWNLOAD(R.string.download),
         NO_MEDIA(R.string.nomedia),
+        NO_PLAYLIST(R.string.noplaylist),
         PLAY(R.string.play),
         APPEND(R.string.append),
         PLAY_AS_AUDIO(R.string.play_as_audio),
@@ -96,5 +102,47 @@ object TranslationMapping {
         LIGHT_THEME(R.string.light_theme),
         MORE(R.string.more),
         HISTORY(R.string.history),
+        ADD_FAVORITE(R.string.favorites_add),
+        REMOVE_FAVORITE(R.string.favorites_remove),
+        FAVORITES(R.string.favorites),
+        STORAGES(R.string.browser_storages),
+        LOCAL_NETWORK(R.string.network_browsing),
+        STREAMS(R.string.streams),
+        LOADING(R.string.loading),
+        ADD_PLAYLIST(R.string.add_to_playlist),
+        ADDING(R.string.adding),
+        TO(R.string.to),
+        NEW_PLAYLIST(R.string.create_new_playlist),
+        CREATE(R.string.create),
+        ADD(R.string.add),
+        ABOUT(R.string.about),
+        CONNECTED_DEVICE(R.string.connected_device),
+        DEVICE_MODEL(R.string.model),
+        VLC_VERSION(R.string.app_name_full),
+        REMOTE_ACCESS_TITLE(R.string.remote_access),
+        REMOTE_ACCESS_HASH_TITLE(R.string.remote_access_hash_title),
+        REMOTE_ACCESS_VERSION_TITLE(R.string.remote_access_version_title),
+        REMOTE_ACCESS_VERSION(R.string.remote_access_version),
+        REMOTE_ACCESS_HASH(R.string.build_remote_access_revision),
+        LIBRARIES(R.string.libraries),
+        SLEEP_TIMER(R.string.sleep_title),
+        PLAYBACK_SPEED(R.string.playback_speed),
+        CHAPTERS(R.string.chapters),
+        BOOKMARKS(R.string.bookmarks),
+        NO_BOOKMARK(R.string.no_bookmark),
+        OK(R.string.ok),
+        CANCEL(R.string.cancel),
+        NOT_SET(R.string.notset),
+        SLEEP_IN(R.string.sleep_in),
+        WAIT_CURRENT_MEDIA(R.string.wait_before_sleep),
+        RESET_ON_INTERACTION(R.string.reset_on_interaction),
+        HOURS(R.string.talkback_hours),
+        MINUTES(R.string.talkback_minutes),
+        VIDEO_PLAYER_REMOTE(R.string.video_player_remote),
+        REMOTE_KEYBOARD_NAVIGATION(R.string.remote_keyboard_navigation),
+        RESUME(R.string.resume),
+        CONFIRM_RESUME(R.string.confirm_resume),
+        APPLY_PLAYQUEUE(R.string.apply_playqueue),
+        NO(R.string.no)
     }
 }

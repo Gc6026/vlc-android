@@ -32,7 +32,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -90,6 +89,7 @@ import org.videolan.medialibrary.interfaces.media.MediaWrapper
 import org.videolan.medialibrary.media.MediaLibraryItem
 import org.videolan.tools.AppScope
 import org.videolan.tools.KEYSTORE_PASSWORD
+import org.videolan.tools.KEY_REMOTE_ACCESS_LAST_STATE_STOPPED
 import org.videolan.tools.NetworkMonitor
 import org.videolan.tools.REMOTE_ACCESS_NETWORK_BROWSER_CONTENT
 import org.videolan.tools.Settings
@@ -97,6 +97,7 @@ import org.videolan.tools.SingletonHolder
 import org.videolan.tools.livedata.LiveDataset
 import org.videolan.tools.putSingle
 import org.videolan.vlc.PlaybackService
+import org.videolan.vlc.PlaybackService.Companion.playerSleepTime
 import org.videolan.vlc.gui.DialogActivity
 import org.videolan.vlc.media.PlaylistManager
 import org.videolan.vlc.providers.NetworkProvider
@@ -151,8 +152,7 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
     private val miniPlayerObserver = androidx.lifecycle.Observer<Boolean> { playing ->
         AppScope.launch {
             val isPlaying = service?.isPlaying == true || playing
-            val playerStatus = Gson().toJson(PlayerStatus(isPlaying))
-            RemoteAccessWebSockets.sendToAll(playerStatus)
+            RemoteAccessWebSockets.sendToAll(PlayerStatus(isPlaying))
         }
     }
 
@@ -161,7 +161,16 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
      */
     private val loginObserver = androidx.lifecycle.Observer<Boolean> { showed ->
         AppScope.launch {
-            RemoteAccessWebSockets.sendToAll(Gson().toJson(LoginNeeded(showed)))
+            RemoteAccessWebSockets.sendToAll(LoginNeeded(showed))
+        }
+    }
+
+    /**
+     * Observes the resume confirmation and display a dialog on the website
+     */
+    private val confirmationObserver = androidx.lifecycle.Observer<String?> { mediaTitle ->
+        AppScope.launch {
+            RemoteAccessWebSockets.sendToAll(ResumeConfirmationNeeded(mediaTitle, mediaTitle == null))
         }
     }
 
@@ -184,6 +193,7 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
                     releaseCallbacks()
                 }
                 .launchIn(AppScope)
+        Log.i(TAG, "Server stopped")
         _serverStatus.postValue(ServerStatus.STOPPED)
         settings = Settings.getInstance(context)
     }
@@ -194,7 +204,10 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
      * Also start monitoring the network shares for the web browser
      */
     suspend fun start() {
+        Settings.getInstance(context).putSingle(
+            KEY_REMOTE_ACCESS_LAST_STATE_STOPPED, false)
         clearFileDownloads()
+        Log.i(TAG, "Server connecting")
         _serverStatus.postValue(ServerStatus.CONNECTING)
         scope.launch {
             engine = generateServer()
@@ -221,6 +234,7 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
      */
     suspend fun stop() {
         clearFileDownloads()
+        Log.i(TAG, "Server stopping")
         _serverStatus.postValue(ServerStatus.STOPPING)
         withContext(Dispatchers.IO) {
             RemoteAccessWebSockets.closeAllSessions()
@@ -494,22 +508,25 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
         }.apply {
             environment.monitor.subscribe(ApplicationStarted) {
                 _serverStatus.postValue(ServerStatus.STARTED)
+                Log.i(TAG, "Server started")
                 AppScope.launch(Dispatchers.Main) {
                     PlaylistManager.showAudioPlayer.observeForever(miniPlayerObserver)
                     DialogActivity.loginDialogShown.observeForever(loginObserver)
+                    PlaybackService.waitConfirmation.observeForever(confirmationObserver)
                 }
             }
             environment.monitor.subscribe(ApplicationStopped) {
                 AppScope.launch(Dispatchers.Main) {
                     PlaylistManager.showAudioPlayer.removeObserver(miniPlayerObserver)
                     DialogActivity.loginDialogShown.removeObserver(loginObserver)
+                    PlaybackService.waitConfirmation.removeObserver(confirmationObserver)
                 }
                 _serverStatus.postValue(ServerStatus.STOPPED)
             }
             watchMedia()
             scope.registerCallBacks {
                 scope.launch {
-                    RemoteAccessWebSockets.sendToAll(Gson().toJson(MLRefreshNeeded()))
+                    RemoteAccessWebSockets.sendToAll(MLRefreshNeeded())
                 }
             }
         }
@@ -543,7 +560,7 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
     override fun onMediaEvent(event: IMedia.Event) {
         if (BuildConfig.DEBUG) Log.d(TAG, "Send now playing from onMediaEvent")
         if (event.type == IMedia.Event.ParsedChanged) {
-            AppScope.launch {  RemoteAccessWebSockets.sendToAll(Gson().toJson(MLRefreshNeeded())) }
+            AppScope.launch {  RemoteAccessWebSockets.sendToAll(MLRefreshNeeded()) }
         }
         if (System.currentTimeMillis() - lastNowPlayingSendTime < NOW_PLAYING_TIMEOUT) return
         lastNowPlayingSendTime = System.currentTimeMillis()
@@ -568,7 +585,7 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
         lastNowPlayingSendTime = System.currentTimeMillis()
         scope.launch {
             generateNowPlaying()?.let { nowPlaying ->
-                AppScope.launch { RemoteAccessWebSockets.sendToAll(message = nowPlaying) }
+                AppScope.launch { RemoteAccessWebSockets.sendToAll(messageObj = nowPlaying) }
             }
         }
         generatePlayQueue()?.let { playQueue ->
@@ -579,17 +596,25 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
     /**
      * Generate the now playing data to be sent to the client
      *
-     * @return a [String] describing the now playing
+     * @return a [NowPlaying] describing the now playing
      */
-    private suspend fun generateNowPlaying(): String?  {
+    suspend fun generateNowPlaying(): NowPlaying? {
         service?.let { service ->
             service.currentMediaWrapper?.let { media ->
-                val gson = Gson()
                 val bookmarks = withContext(Dispatchers.IO) { media.bookmarks ?: arrayOf() }
-                val nowPlaying = NowPlaying(media.title ?: "", media.artist
-                        ?: "", service.isPlaying, service.getTime(), service.length, media.id, media.artworkURL
-                        ?: "", media.uri.toString(), getVolume(), service.isShuffling, service.repeatType, bookmarks = bookmarks.map { WSBookmark(it.title, it.time) })
-                return gson.toJson(nowPlaying)
+                val chapters = withContext(Dispatchers.IO) { service.getChapters(-1) ?: arrayOf() }
+                val speed = String.format(Locale.US, "%.2f", service.speed).toFloat()
+                var sleepTimer = 0L
+                withContext(Dispatchers.Main) {
+                    sleepTimer = playerSleepTime.value?.time?.time ?: 0L
+                }
+                val isVideoPlaying = service.playlistManager.player.isVideoPlaying()
+                val waitForMediaEnd = service.waitForMediaEnd
+                val resetOnInteraction = service.resetOnInteraction
+                val nowPlaying = NowPlaying(media.title ?: "", media.artistName
+                        ?: "", service.isPlaying, isVideoPlaying, service.getTime(), service.length, media.id, media.artworkURL
+                        ?: "", media.uri.toString(), getVolume(), speed, sleepTimer, waitForMediaEnd, resetOnInteraction, service.isShuffling, service.repeatType, bookmarks = bookmarks.map { WSBookmark(it.id, it.title, it.time) }, chapters = chapters.map { WSChapter(it.name, it.duration) })
+                return nowPlaying
 
             }
         }
@@ -599,18 +624,17 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
     /**
      * Generate the play queue data to be sent to the client
      *
-     * @return a [String] describing the play queue
+     * @return a [PlayQueue] describing the play queue
      */
-    private fun generatePlayQueue(): String? {
+    fun generatePlayQueue(): PlayQueue? {
         service?.let { service ->
             val list = ArrayList<PlayQueueItem>()
             service.playlistManager.getMediaList().forEachIndexed { index, mediaWrapper ->
-                list.add(PlayQueueItem(mediaWrapper.id, mediaWrapper.title, mediaWrapper.artist
+                list.add(PlayQueueItem(mediaWrapper.id, mediaWrapper.title, mediaWrapper.artistName
                         ?: "", mediaWrapper.length, mediaWrapper.artworkMrl
-                        ?: "", service.playlistManager.currentIndex == index))
+                        ?: "", service.playlistManager.currentIndex == index, favorite = mediaWrapper.isFavorite))
             }
-            val gson = Gson()
-            return gson.toJson(PlayQueue(list))
+            return PlayQueue(list)
         }
         return null
     }
@@ -741,17 +765,22 @@ class RemoteAccessServer(private val context: Context) : PlaybackService.Callbac
     }
 
     abstract class WSMessage(val type: String)
-    data class NowPlaying(val title: String, val artist: String, val playing: Boolean, val progress: Long, val duration: Long, val id: Long, val artworkURL: String, val uri: String, val volume: Int, val shuffle: Boolean, val repeat: Int, val shouldShow: Boolean = PlaylistManager.playingState.value
-            ?: false, val bookmarks:List<WSBookmark> = listOf()) : WSMessage("now-playing")
+    data class NowPlaying(val title: String, val artist: String, val playing: Boolean, val isVideoPlaying: Boolean, val progress: Long,
+                          val duration: Long, val id: Long, val artworkURL: String, val uri: String, val volume: Int, val speed: Float,
+                          val sleepTimer: Long, val waitForMediaEnd:Boolean, val resetOnInteraction:Boolean, val shuffle: Boolean, val repeat: Int,
+                          val shouldShow: Boolean = PlaylistManager.playingState.value ?: false,
+                          val bookmarks:List<WSBookmark> = listOf(), val chapters:List<WSChapter> = listOf()) : WSMessage("now-playing")
 
-    data class WSBookmark(val title: String, val time: Long)
+    data class WSBookmark(val id:Long, val title: String, val time: Long)
+    data class WSChapter(val title: String, val time: Long)
 
     data class PlayQueue(val medias: List<PlayQueueItem>) : WSMessage("play-queue")
-    data class PlayQueueItem(val id: Long, val title: String, val artist: String, val length: Long, val artworkURL: String, val playing: Boolean, val resolution: String = "", val path: String = "", val isFolder: Boolean = false, val progress: Long = 0L, val played: Boolean = false, val fileType: String = "", val videoType:String? = null)
+    data class PlayQueueItem(val id: Long, val title: String, val artist: String, val duration: Long, val artworkURL: String, val playing: Boolean, val resolution: String = "", val path: String = "", val isFolder: Boolean = false, val progress: Long = 0L, val played: Boolean = false, var fileType: String = "", val favorite: Boolean = false)
     data class WebSocketAuthorization(val status:String, val initialMessage:String) : WSMessage("auth")
     data class Volume(val volume: Int) : WSMessage("volume")
     data class PlayerStatus(val playing: Boolean) : WSMessage("player-status")
     data class LoginNeeded(val dialogOpened: Boolean) : WSMessage("login-needed")
+    data class ResumeConfirmationNeeded(val mediaTitle: String?, val consumed:Boolean) : WSMessage("resume-confirmation")
     data class MLRefreshNeeded(val refreshNeeded: Boolean = true) : WSMessage("ml-refresh-needed")
     data class BrowserDescription(val path: String, val description:String) : WSMessage("browser-description")
     data class PlaybackControlForbidden(val forbidden: Boolean = true): WSMessage("playback-control-forbidden")

@@ -177,6 +177,7 @@
     <string name="track_codec_info">Codec: %1$s\n</string>
     <string name="track_language_info">Limbă: %1$s\n</string>
     <string name="volume">Volum</string>
+    <string name="system_volume_disabled">%s\nNu există acces la volumul sistemului</string>
     <string name="sound_on">Sunet pornit</string>
     <string name="sound_off">Sunet oprit</string>
     <string name="brightness">Luminozitate</string>
@@ -201,6 +202,8 @@
     <string name="wait_before_sleep">Așteaptă ca elementul media actual să se termine primul</string>
     <string name="reset_on_interaction">Resetează orice interacțiune</string>
     <string name="default_sleep_timer_summary">%1$s, așteaptă sfârșitul fișierului media: %2$s, resetare la interacțiune: %3$s</string>
+    <string name="video_player_remote">Player-ul video de la distanță</string>
+    <string name="remote_keyboard_navigation">Navigare prin tastatură</string>
 
     <string name="server_add_title">Adaugă un server nou la favorite</string>
     <string name="server_domain_hint">Adresa serverului (nume domeniu sau IP)</string>
@@ -290,6 +293,7 @@
     <string name="authors">Autori</string>
     <string name="vlc_authors">și autorii VLC.</string>
     <string name="is_compiled_by">este compilată de:</string>
+    <string name="is_signed_by">Semnat de</string>
     <string name="sources">Surse</string>
     <string name="libraries">Biblioteci</string>
     <string name="feedback_forum">Forum feedback</string>
@@ -380,6 +384,11 @@
     <string name="browser_show_hidden_files_title">Afișați fișierele ascunse</string>
     <string name="albums_show_track_numbers">Arată numerele pistei</string>
     <string name="enable_video_screenshot">Fă o captură de ecran</string>
+    <string name="enable_tap_and_hold_fastplay_title">Activează Redarea rapidă</string>
+    <string name="enable_tap_and_hold_fastplay_summary">Atinge și menține apăsat pentru a crește viteza de redare</string>
+    <string name="fastplay_speed_title">Viteza Redării rapide</string>
+    <string name="fastplay_title">Se redă la %sx</string>
+    <string name="fastplay_subtitle">Eliberează pentru a opri</string>
 
     <string name="subtitles_prefs_category">Subtitrari</string>
     <string name="subtitles_size_title">Marime subtitrari</string>
@@ -449,6 +458,8 @@
     <string name="audio_ducking_summary">Ajutor prin redarea notificărilor audio, a instrucțiunilor de navigare sau a asistentului care vorbește</string>
     <string name="casting_category">Redare</string>
     <string name="remote_access">Acces de la distanță</string>
+    <string name="remote_access_version_title">Versiune de acces la distanță</string>
+    <string name="remote_access_hash_title">Hash de acces la distanță</string>
     <string name="remote_access_status">Starea serverului</string>
     <string name="remote_access_status_summary">Atinge pentru a vedea starea serverului</string>
     <string name="remote_access_connections">Conexiuni</string>
@@ -554,6 +565,8 @@
     <string name="http_user_agent">Agent de utilizator HTTP</string>
     <string name="custom_libvlc_options">Opțiuni personalizate libVLC</string>
     <string name="custom_libvlc_options_invalid">Setări libVLC eronate!</string>
+    <string name="dav1d_thread_number">Numărul firului Dav1d</string>
+    <string name="dav1d_thread_number_invalid">Numărul firului invalid! (>=1)</string>
 
     <string name="serious_crash">Din păcate, o eroare gravă a apărut și VLC-ul trebuie închis.</string>
     <string name="help_us_send_log">Ajutați-ne să îmbunătățim VLC -ul prin trimiterea următorului jurnal de eroare:</string>
@@ -585,10 +598,13 @@
     <string name="search_global">Caută în toate bibliotecile media</string>
     <string name="playlist_save">Salvare Playlist</string>
     <string name="playlist_name_hint">Numele listei de redare</string>
+    <string name="chapters">Capitole</string>
+    <string name="notset">Nu e setat</string>
     <string name="go_to_chapter">Dute la capitolul…</string>
     <string name="current_chapter">Chapter: %s</string>
     <string name="confirm_resume">Reiau redarea de la ultima poziție?</string>
     <string name="confirm_resume_title">Reluare a fisierelor video redate</string>
+    <string name="confirm_resume_audio_title">Reia fișierul audio redat</string>
     <string name="tv_ui_title">Interfata Android TV</string>
     <string name="tv_ui_summary">Schimbă interfața UI în tema TV adaptată</string>
     <string name="medialibrary">Biblioteca media</string>
@@ -598,6 +614,21 @@
     <string name="whats_new_title">Ce e nou în VLC pentru Android %s</string>
     <string name="whats_new_36_webserver_text">Cu această nouă funcție de acces la distanță, preia controlul lui VLC pentru Android de pe orice al dispozitiv.\nTrimite-ți fișierele media în ambele direcții, controlează-ți lista de redare și multe altele!</string>
     <string name="whats_new_36_favorites_text">De acum îți poți adăuga fișierele media, listele de redare, artiștii și albumele la favorite.\nGăsește-ți conținutul preferat dintr-o privire prin filtrarea conținutului numai după favorite!</string>
+
+<!--    update-->
+    <string name="update_title">O actualizare disponibilă</string>
+    <string name="install_nightly_title">Instalează versiunea de noapte</string>
+    <string name="update_text">Este disponibilă o nouă lansare nocturnă a VLC pentru Android!\n\nVezi asta pentru că folosești o subversiune de noapte.</string>
+    <string name="install_text">Versiunile nocturne sunt actualizate automat în fiecare zi cu cele mai recente funcții și remedieri.</string>
+
+    <string name="open_in_browser">Deschide în browser</string>
+    <string name="install">Instalează</string>
+    <string name="install_nightly">Instalează versiunea de noapte</string>
+    <string name="install_nightly_alert">Subversiunile nocture sunt versiuni experimentale ce sunt actualizate zilnic.\n\nAșteptați-vă noi funcții, dar și la noi erori!</string>
+    <string name="nightly_version">S-a găsit versiunea: %2$s-%1$s</string>
+    <string name="update_nightly_alert">Rulezi o versiune nocturnă. Dorești să cauți periodic actualizări?</string>
+    <string name="update_nightly">Actualizare automată</string>
+    <string name="update_nightly_summary">Caută periodic actualizări nocturne</string>
 
 
     <!-- Accessibility -->
@@ -857,6 +888,8 @@
     <string name="invalid_file">Fișier invalid. Nu poate fi partajat.</string>
     <string name="share_file">Partajare %s</string>
     <string name="share_message">Aici este %s</string>
+    <string name="share_track_info">Distribuie informațiile pistei</string>
+    <string name="share_track">În prezent asculți %s</string>
     <string name="find_metadata">Găsiți metadatele</string>
     <string name="moviepedia_hint">Căutare metadate</string>
     <string name="moviepedia_result">Rezultate video</string>
@@ -1242,4 +1275,16 @@
     <string name="metered_warn">Avertizează-mă (avertismentul poate fi ratat pentru redarea audio)</string>
     <string name="metered_connection_stopped">Fișierul media s-a oprit deoarece conexiunea este măsurată</string>
     <string name="metered_connection_warning">Conexiunea dvs. este măsurată. Se pot aplica taxe.</string>
+    <string name="adding">Se adaugă</string>
+    <string name="to">la</string>
+    <string name="device">Dispozitiv</string>
+    <string name="connected_device">Dispozitiv conectat</string>
+    <string name="model">Modelul dispozitivului</string>
+    <string name="prefs_app_data">Datele aplicației</string>
+    <string name="export_settings_summary">Exportă-ți setările într-un fișier ca să le imporți mai târziu</string>
+    <string name="export_settings">Exportă setările</string>
+    <string name="restore_settings_summary">Restaurează-ți setările dintr-un export anterior</string>
+    <string name="restore_settings">Restaurează setările</string>
+    <string name="export_settings_success">Setările au fost exportate cu succes în rădăcina de stocare internă</string>
+    <string name="export_settings_failure">Ceva a mers greșit în timpul exportării setărilor tale</string>
 </resources>

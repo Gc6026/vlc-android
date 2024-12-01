@@ -38,6 +38,7 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
 import androidx.core.view.GestureDetectorCompat
+import androidx.lifecycle.Observer
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.interfaces.IMedia
 import org.videolan.libvlc.interfaces.IVLCVout
@@ -57,7 +58,7 @@ import org.videolan.vlc.R
 import org.videolan.vlc.gui.helpers.MISC_CHANNEL_ID
 import org.videolan.vlc.gui.view.PopupLayout
 import org.videolan.vlc.util.getPendingIntent
-import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.floor
 
 class PopupManager constructor(private val service: PlaybackService) : PlaybackService.Callback, GestureDetector.OnDoubleTapListener, View.OnClickListener, GestureDetector.OnGestureListener, IVLCVout.OnNewVideoLayoutListener, IVLCVout.Callback {
@@ -67,6 +68,10 @@ class PopupManager constructor(private val service: PlaybackService) : PlaybackS
     private lateinit var closeButton: ImageView
     private lateinit var playPauseButton: ImageView
     private val alwaysOn: Boolean = Settings.getInstance(service).getBoolean(POPUP_KEEPSCREEN, false)
+    var observer: Observer<Boolean> = Observer {
+        if (!it) {
+            removePopup()
+        }}
 
     private val handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
@@ -78,6 +83,10 @@ class PopupManager constructor(private val service: PlaybackService) : PlaybackS
     }
 
     fun removePopup() {
+        service.isInPiPMode.removeObserver(observer)
+        // If the popup is killed from the x button, isInPiPMode will still be true
+        // and when reopening the app will restart the video player
+        service.isInPiPMode.value = false
         hideNotification()
         val view = rootView ?: return
         service.removeCallback(this)
@@ -89,6 +98,8 @@ class PopupManager constructor(private val service: PlaybackService) : PlaybackS
 
     fun showPopup() {
         service.addCallback(this)
+        service.isInPiPMode.value = true
+        service.isInPiPMode.observeForever(observer)
         val li = LayoutInflater.from(service.applicationContext)
         rootView = li.inflate(R.layout.video_popup, null) as PopupLayout
         val view = rootView ?: return
@@ -145,7 +156,7 @@ class PopupManager constructor(private val service: PlaybackService) : PlaybackS
     override fun onLongPress(e: MotionEvent) {}
 
     override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-        if (abs(velocityX) > FLING_STOP_VELOCITY || velocityY > FLING_STOP_VELOCITY) {
+        if (velocityX.absoluteValue > FLING_STOP_VELOCITY || velocityY > FLING_STOP_VELOCITY) {
             stopPlayback()
             return true
         }
@@ -231,6 +242,7 @@ class PopupManager constructor(private val service: PlaybackService) : PlaybackS
         removePopup()
         if (service.hasMedia() && !service.isPlaying)
             service.currentMediaWrapper?.let { mw -> mw.flags = MediaWrapper.MEDIA_PAUSED }
+        service.isInPiPMode.value = false
         service.switchToVideo()
     }
 

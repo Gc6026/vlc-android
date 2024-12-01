@@ -34,6 +34,7 @@ object Settings : SingletonHolder<SharedPreferences, Context>({ init(it.applicat
     var incognitoMode = false
     var safeMode = false
     var remoteAccessEnabled = MutableLiveData(false)
+    var fastplaySpeed = 2f
     private var audioControlsChangeListener: (() -> Unit)? = null
     lateinit var device : DeviceInfo
         private set
@@ -59,6 +60,7 @@ object Settings : SingletonHolder<SharedPreferences, Context>({ init(it.applicat
         incognitoMode = prefs.getBoolean(KEY_INCOGNITO, false)
         safeMode = prefs.getBoolean(KEY_SAFE_MODE, false) && prefs.getString(KEY_SAFE_MODE_PIN, "")?.isNotBlank() == true
         remoteAccessEnabled.postValue(prefs.getBoolean(KEY_ENABLE_REMOTE_ACCESS, false))
+        fastplaySpeed = prefs.getString(FASTPLAY_SPEED, "2")?.toFloat() ?: 2f
         return prefs
     }
 
@@ -95,12 +97,15 @@ const val KEY_BLACK_THEME = "enable_black_theme"
 const val KEY_DAYNIGHT = "daynight"
 const val SHOW_VIDEO_THUMBNAILS = "show_video_thumbnails"
 const val KEY_VIDEO_CONFIRM_RESUME = "video_confirm_resume"
+const val KEY_AUDIO_CONFIRM_RESUME = "audio_confirm_resume"
 const val KEY_MEDIALIBRARY_AUTO_RESCAN = "auto_rescan"
 const val KEY_TV_ONBOARDING_DONE = "key_tv_onboarding_done"
 const val KEY_INCLUDE_MISSING = "include_missing"
 const val KEY_INCOGNITO = "incognito_mode"
 const val KEY_LAST_WHATS_NEW = "last_whats_new"
 const val KEY_SHOW_WHATS_NEW = "show_whats_new"
+const val KEY_LAST_UPDATE_TIME = "last_update_time"
+const val KEY_SHOW_UPDATE = "show_update"
 
 //UI
 const val LIST_TITLE_ELLIPSIZE = "list_title_ellipsize"
@@ -129,6 +134,7 @@ const val ML_SCAN_OFF = 1
 
 //Remote access
 const val KEY_ENABLE_REMOTE_ACCESS = "enable_remote_access"
+const val KEY_REMOTE_ACCESS_LAST_STATE_STOPPED = "remote_access_last_state_stopped"
 const val KEY_REMOTE_ACCESS_ML_CONTENT = "remote_access_medialibrary_content"
 const val REMOTE_ACCESS_FILE_BROWSER_CONTENT = "remote_access_file_browser_content"
 const val REMOTE_ACCESS_NETWORK_BROWSER_CONTENT = "remote_access_network_browser_content"
@@ -164,6 +170,8 @@ const val ENABLE_VOLUME_GESTURE = "enable_volume_gesture"
 const val ENABLE_BRIGHTNESS_GESTURE = "enable_brightness_gesture"
 const val SCREENSHOT_MODE = "screenshot_mode"
 const val ENABLE_SCALE_GESTURE = "enable_scale_gesture"
+const val ENABLE_FASTPLAY = "enable_fastplay"
+const val FASTPLAY_SPEED = "fastplay_speed"
 const val SAVE_BRIGHTNESS = "save_brightness"
 const val BRIGHTNESS_VALUE = "brightness_value"
 const val POPUP_KEEPSCREEN = "popup_keepscreen"
@@ -238,6 +246,11 @@ const val ALBUMS_SHOW_TRACK_NUMBER = "albums_show_track_number"
 
 //widgets
 const val WIDGETS_PREVIEW_PLAYING = "widgets_preview_playing"
+
+//OpenSubtitles
+const val KEY_OPEN_SUBTITLES_USER = "open_subtitles_user"
+const val KEY_OPEN_SUBTITLES_LIMIT = "open_subtitles_limit"
+
 
 const val KEY_SAFE_MODE_PIN = "safe_mode_pin"
 const val KEY_RESTRICT_SETTINGS = "restrict_settings"

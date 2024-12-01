@@ -27,10 +27,12 @@ import android.annotation.SuppressLint
 import android.media.AudioManager
 import android.os.Bundle
 import android.view.*
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.widget.ViewStubCompat
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -39,6 +41,8 @@ import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -46,7 +50,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import com.google.android.material.navigationrail.NavigationRailView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.videolan.libvlc.util.AndroidUtil
 import org.videolan.medialibrary.interfaces.Medialibrary
 import org.videolan.resources.KEY_CURRENT_AUDIO
@@ -62,6 +70,8 @@ import org.videolan.vlc.gui.helpers.*
 import org.videolan.vlc.gui.helpers.UiTools.isTablet
 import org.videolan.vlc.interfaces.IRefreshable
 import org.videolan.vlc.media.PlaylistManager
+import org.videolan.vlc.media.ResumeStatus
+import org.videolan.vlc.media.WaitConfirmation
 import org.videolan.vlc.util.LifecycleAwareScheduler
 import org.videolan.vlc.util.SchedulerCallback
 import org.videolan.vlc.util.isTalkbackIsEnabled
@@ -102,11 +112,26 @@ open class AudioPlayerContainerActivity : BaseActivity(), KeycodeListener, Sched
     val playlistTipsDelegate: AudioPlaylistTipsDelegate by lazy(LazyThreadSafetyMode.NONE) { AudioPlaylistTipsDelegate(this) }
     private val playerKeyListenerDelegate: PlayerKeyListenerDelegate by lazy(LazyThreadSafetyMode.NONE) { PlayerKeyListenerDelegate(this@AudioPlayerContainerActivity) }
     val shownTips = ArrayList<Int>()
+    private var currentConfirmationDialog: AlertDialog? = null
+
     protected val currentFragment: Fragment?
         get() = supportFragmentManager.findFragmentById(R.id.fragment_placeholder)
 
     val menu: Menu
         get() = toolbar.menu
+
+    private var observer: Observer<in WaitConfirmation?> = Observer {
+        if (it != null) {
+            // Every AudioPlayerContainerActivity instance will receive this. To avoid having the
+            // Dialog pop every time the user goes to previous instances, stop the
+            // showConfirmationResumeDialog once it's been shown.
+            if (!it.used) {
+                it.used = true
+                showConfirmResumeDialog(it)
+            }
+        } else
+            currentConfirmationDialog?.dismiss()
+    }
 
     open fun isTransparent(): Boolean = false
 
@@ -143,7 +168,7 @@ open class AudioPlayerContainerActivity : BaseActivity(), KeycodeListener, Sched
            restoreBookmarks =  savedInstanceState.getBoolean(BOOKMARK_VISIBLE, false)
         }
         super.onCreate(savedInstanceState)
-        if (AndroidUtil.isLolliPopOrLater && this is MainActivity) WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (VlcMigrationHelper.isLolliPopOrLater && this is MainActivity) WindowCompat.setDecorFitsSystemWindows(window, false)
 
         volumeControlStream = AudioManager.STREAM_MUSIC
         registerLiveData()
@@ -224,7 +249,7 @@ open class AudioPlayerContainerActivity : BaseActivity(), KeycodeListener, Sched
         tabLayout?.viewTreeObserver?.addOnGlobalLayoutListener {
             //add a shadow if there are tabs
             val needToElevate = (tabLayout?.layoutParams?.height != 0) || navigationRail?.visibility ?: View.GONE != View.GONE
-            if (AndroidUtil.isLolliPopOrLater) appBarLayout.elevation = if (needToElevate) 8.dp.toFloat() else 0.dp.toFloat()
+            if (VlcMigrationHelper.isLolliPopOrLater) appBarLayout.elevation = if (needToElevate) 8.dp.toFloat() else 0.dp.toFloat()
         }
         audioPlayerContainer = findViewById(R.id.audio_player_container)
         (audioPlayerContainer.layoutParams as CoordinatorLayout.LayoutParams).bottomMargin = bottomInset
@@ -233,6 +258,45 @@ open class AudioPlayerContainerActivity : BaseActivity(), KeycodeListener, Sched
     fun setTabLayoutVisibility(show: Boolean) {
         tabLayout?.layoutParams?.height = if (show) ViewGroup.LayoutParams.WRAP_CONTENT else 0
         tabLayout?.requestLayout()
+    }
+
+    private fun showConfirmResumeDialog(confirmation: WaitConfirmation) {
+        PlaybackService.instance?.pause()
+        PlaybackService.waitConfirmation.postValue(confirmation.title)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_video_resume, null)
+        val resumeAllCheck = dialogView.findViewById<CheckBox>(R.id.video_resume_checkbox)
+        AlertDialog.Builder(this)
+            .setTitle(confirmation.title)
+            .setView(dialogView)
+            .setCancelable(true)
+            .setPositiveButton(R.string.resume) { _, _ ->
+                if (resumeAllCheck.isChecked) PlaybackService.instance?.playlistManager?.audioResumeStatus = ResumeStatus.ALWAYS
+                lifecycleScope.launch { PlaybackService.instance?.playlistManager?.playIndex(confirmation.index, confirmation.flags, forceResume = true) }
+            }
+            .setNegativeButton(R.string.no) { _, _ ->
+                if (resumeAllCheck.isChecked) PlaybackService.instance?.playlistManager?.audioResumeStatus = ResumeStatus.NEVER
+                lifecycleScope.launch { PlaybackService.instance?.playlistManager?.playIndex(confirmation.index, confirmation.flags, forceRestart = true) }
+            }
+            .setOnDismissListener {
+                currentConfirmationDialog = null
+                PlaybackService.waitConfirmation.postValue(null)
+            }
+            .create().apply {
+                setCancelable(true)
+                setOnCancelListener {
+                    PlaybackService.instance?.playlistManager?.stop()
+                }
+                setOnKeyListener { dialog, keyCode, _ ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        dialog.dismiss()
+                        finish()
+                        true
+                    } else false
+                }
+                currentConfirmationDialog = this
+                show()
+            }
     }
 
     private fun initAudioPlayer() {
@@ -381,6 +445,26 @@ open class AudioPlayerContainerActivity : BaseActivity(), KeycodeListener, Sched
         appBarLayout.setExpanded(true)
     }
 
+    private fun unregisterObserver(service: PlaybackService) {
+        if (service.playlistManager.waitForConfirmationAudio.hasActiveObservers()) {
+            service.playlistManager.waitForConfirmationAudio.removeObservers(this)
+        }
+    }
+
+    private fun registerObserver(service: PlaybackService) {
+        if (!service.playlistManager.waitForConfirmationAudio.hasActiveObservers() &&
+            lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            service.playlistManager.waitForConfirmationAudio.observe(this, observer)
+        }
+    }
+
+    open fun onServiceChanged(service: PlaybackService?) {
+        service?.let {
+            unregisterObserver(it)
+            registerObserver(it)
+        }
+    }
+
     override fun onStart() {
         ExternalMonitor.subscribeStorageCb(this)
         super.onStart()
@@ -402,12 +486,20 @@ open class AudioPlayerContainerActivity : BaseActivity(), KeycodeListener, Sched
     }
 
     override fun onResume() {
+        PlaybackService.serviceFlow.onEach {
+            onServiceChanged(it)
+        }.launchIn(MainScope())
         if (playerShown)
             applyMarginToProgressBar(playerBehavior.peekHeight)
         else
             applyMarginToProgressBar(0)
         setContentBottomPadding()
         super.onResume()
+    }
+
+    override fun onPause() {
+        PlaybackService.instance?.let { unregisterObserver(it) }
+        super.onPause()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

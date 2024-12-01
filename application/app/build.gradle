@@ -62,19 +62,25 @@ android {
             }
         }
     }
+    androidComponents {
+        beforeVariants(selector().withBuildType("vlcBundle")) { variantBuilder ->
+            variantBuilder.minSdk = 30
+        }
+    }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             kotlinOptions.freeCompilerArgs = ['-Xno-param-assertions']
+            defaultConfig.minSdkVersion rootProject.ext.minSdkVersion
         }
         signedRelease {
             initWith release
             signingConfig = signingConfigs.release
             matchingFallbacks = ['release']
         }
-        noTv {
+        vlcBundle {
             initWith release
             matchingFallbacks = ['release']
         }
@@ -95,13 +101,19 @@ android {
         manifest.srcFile 'flavors/release/AndroidManifest.xml'
     }
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     splits {
         abi {
             def isReleaseBuild = false
             gradle.startParameter.taskNames.find {
                 // Enable split for release builds in different build flavors
                 // (assemblePaidRelease, assembleFreeRelease, etc.).
-                if (it.toLowerCase() ==~ /assemble.*Release/.toLowerCase() || it.toLowerCase() ==~ /assembleNoTv/.toLowerCase()) {
+                if (it.toLowerCase() ==~ /assemble.*Release/.toLowerCase()) {
                     isReleaseBuild = true
                     return true // break
                 }
@@ -115,7 +127,6 @@ android {
     }
 
     def abiCodes = ['armeabi-v7a': 5, 'arm64-v8a': 6, 'x86': 7, 'x86_64': 8]
-    def abiCodesNoTv = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86': 3, 'x86_64': 4]
     lint {
         abortOnError false
         disable 'MissingTranslation', 'ExtraTranslation'
@@ -129,14 +140,14 @@ android {
             def abiName = System.getenv('GRADLE_ABI')?.toLowerCase() ?: "all"
             if (outputAbi != null) abiName = outputAbi
             def versionCode = abiCodes.get(abiName, 0)
-            if (variant.buildType.name == "noTv") {
-                versionCode = abiCodesNoTv.get(abiName, 0)
+            if (variant.buildType.name == "vlcBundle") {
+                versionCode = 9
             }
+
             output.versionCodeOverride = 10000000 + defaultConfig.versionCode + versionCode
             def outputName = "VLC-Android-"
             outputName += variant.versionName.replace(" ", "-")
             if (variant.buildType.name == "debug") outputName += "-debug"
-            if (variant.buildType.name == "noTv") outputName += "-no-tv"
             outputName += "-" + abiName + ".apk"
             output.outputFileName = outputName
         }

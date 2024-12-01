@@ -69,6 +69,7 @@ import org.videolan.vlc.gui.helpers.ExpandStateAppBarLayoutBehavior
 import org.videolan.vlc.gui.helpers.SwipeDragItemTouchHelperCallback
 import org.videolan.vlc.gui.helpers.UiTools
 import org.videolan.vlc.gui.helpers.UiTools.addToPlaylist
+import org.videolan.vlc.gui.helpers.UiTools.createShortcut
 import org.videolan.vlc.gui.helpers.UiTools.showPinIfNeeded
 import org.videolan.vlc.gui.view.RecyclerSectionItemDecoration
 import org.videolan.vlc.interfaces.Filterable
@@ -168,7 +169,7 @@ open class HeaderMediaListActivity : AudioPlayerContainerActivity(), IEventsHand
 
         }
         binding.btnShuffle.setOnClickListener {
-            viewModel.playlist?.let { MediaUtils.playTracks(this, it, SecureRandom().nextInt(min(playlist.tracksCount, MEDIALIBRARY_PAGE_SIZE)), true) }
+            viewModel.playlist?.let { if (it.tracksCount > 0) MediaUtils.playTracks(this, it, SecureRandom().nextInt(min(playlist.tracksCount, MEDIALIBRARY_PAGE_SIZE)), true) }
         }
         binding.btnAddPlaylist.setOnClickListener {
             viewModel.playlist?.let { addToPlaylist(it.tracks.toList()) }
@@ -341,7 +342,10 @@ open class HeaderMediaListActivity : AudioPlayerContainerActivity(), IEventsHand
             invalidateActionMode()
         } else {
             if (searchView.visibility == View.VISIBLE) UiTools.setKeyboardVisibility(v, false)
-            MediaUtils.playTracks(this, viewModel.tracksProvider, position)
+            if (isPlaylist || Settings.getInstance(this).getBoolean(FORCE_PLAY_ALL_AUDIO, false))
+                MediaUtils.playTracks(this, viewModel.tracksProvider, position)
+            else
+                MediaUtils.openMedia(this, item as MediaWrapper)
         }
     }
 
@@ -367,6 +371,11 @@ open class HeaderMediaListActivity : AudioPlayerContainerActivity(), IEventsHand
                     if (item.isFavorite) add(CTX_FAV_REMOVE) else add(CTX_FAV_ADD)
                     if (media.type == MediaWrapper.TYPE_STREAM || (media.type == MediaWrapper.TYPE_ALL && isSchemeHttpOrHttps(media.uri.scheme)))
                         addAll(CTX_COPY, CTX_RENAME)
+                    if (media.type == MediaWrapper.TYPE_AUDIO) {
+                        add(CTX_GO_TO_ARTIST)
+                        if (BuildConfig.DEBUG) Log.d("CtxPrep", "Artist id is: ${media.artistId}, album artist is: ${media.albumArtistId}")
+                        if (media.artistId != media.albumArtistId) add(CTX_GO_TO_ALBUM_ARTIST)
+                    }
                     else add(CTX_SHARE)
                 }
                 showContext(this, this, position, media, flags)
@@ -498,6 +507,25 @@ open class HeaderMediaListActivity : AudioPlayerContainerActivity(), IEventsHand
             }
             CTX_FAV_ADD, CTX_FAV_REMOVE -> lifecycleScope.launch {
                 media.isFavorite = option == CTX_FAV_ADD
+            }
+            CTX_ADD_SHORTCUT -> lifecycleScope.launch { createShortcut(media) }
+            CTX_GO_TO_ARTIST -> lifecycleScope.launch(Dispatchers.IO) {
+                val artist = if (media is Album) media.retrieveAlbumArtist() else (media as MediaWrapper).artist
+                val i = Intent(this@HeaderMediaListActivity, SecondaryActivity::class.java)
+                i.putExtra(SecondaryActivity.KEY_FRAGMENT, SecondaryActivity.ALBUMS_SONGS)
+                i.putExtra(AudioBrowserFragment.TAG_ITEM, artist)
+                i.putExtra(ARTIST_FROM_ALBUM, true)
+                i.flags = i.flags or Intent.FLAG_ACTIVITY_NO_HISTORY
+                startActivity(i)
+            }
+            CTX_GO_TO_ALBUM_ARTIST -> lifecycleScope.launch(Dispatchers.IO) {
+                val artist = (media as MediaWrapper).albumArtist
+                val i = Intent(this@HeaderMediaListActivity, SecondaryActivity::class.java)
+                i.putExtra(SecondaryActivity.KEY_FRAGMENT, SecondaryActivity.ALBUMS_SONGS)
+                i.putExtra(AudioBrowserFragment.TAG_ITEM, artist)
+                i.putExtra(ARTIST_FROM_ALBUM, true)
+                i.flags = i.flags or Intent.FLAG_ACTIVITY_NO_HISTORY
+                startActivity(i)
             }
             else -> {}
         }

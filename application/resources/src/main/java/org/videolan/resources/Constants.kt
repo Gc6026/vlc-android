@@ -235,6 +235,7 @@ const val COMPATERROR_ACTIVITY = "org.videolan.vlc.gui.CompatErrorActivity"
 const val TV_SEARCH_ACTIVITY = "org.videolan.television.ui.SearchActivity"
 const val MOBILE_SEARCH_ACTIVITY = "org.videolan.vlc.gui.SearchActivity"
 const val TV_MAIN_ACTIVITY = "org.videolan.television.ui.MainTvActivity"
+const val TV_CONFIRMATION_ACTIVITY = "org.videolan.television.ui.dialogs.ConfirmationTvActivity"
 const val MOBILE_MAIN_ACTIVITY = "org.videolan.vlc.gui.MainActivity"
 const val MOVIEPEDIA_ACTIVITY = "org.videolan.moviepedia.ui.MoviepediaActivity"
 const val TV_AUDIOPLAYER_ACTIVITY = "org.videolan.television.ui.audioplayer.AudioPlayerActivity"
@@ -244,3 +245,4 @@ const val REMOTE_ACCESS_SERVICE = "org.videolan.vlc.webserver.RemoteAccessServic
 const val REMOTE_ACCESS_ONBOARDING = "org.videolan.vlc.webserver.gui.remoteaccess.onboarding.RemoteAccessOnboardingActivity"
 
 const val ROOM_DATABASE = "/vlc_database.zip"
+const val EXPORT_SETTINGS_FILE = "/vlc_exported_settings.json"

@@ -51,12 +51,16 @@ import androidx.core.net.toUri
 import androidx.core.view.children
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import androidx.window.layout.FoldingFeature
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.videolan.libvlc.util.AndroidUtil
 import org.videolan.medialibrary.interfaces.media.MediaWrapper
 import org.videolan.medialibrary.media.MediaWrapperImpl
@@ -71,6 +75,7 @@ import org.videolan.vlc.gui.browser.KEY_MEDIA
 import org.videolan.vlc.gui.dialogs.VideoTracksDialog
 import org.videolan.vlc.gui.helpers.*
 import org.videolan.vlc.gui.helpers.UiTools.showVideoTrack
+import org.videolan.vlc.gui.helpers.hf.checkPIN
 import org.videolan.vlc.gui.view.PlayerProgress
 import org.videolan.vlc.media.MediaUtils
 import org.videolan.vlc.util.*
@@ -299,6 +304,10 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
         player.rootView?.announceForAccessibility("$text.$subText")
     }
 
+    fun hideInfo() {
+        player.handler.sendEmptyMessage(VideoPlayerActivity.FADE_OUT_INFO)
+    }
+
      fun fadeOutInfo(view:View?) {
         if (view?.visibility == View.VISIBLE) {
             view.startAnimation(AnimationUtils.loadAnimation(
@@ -372,7 +381,7 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
         if (dim || player.isLocked) {
             player.window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
             navbar = navbar or (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
-            if (AndroidUtil.isKitKatOrLater) visibility = visibility or View.SYSTEM_UI_FLAG_IMMERSIVE
+            if (VlcMigrationHelper.isKitKatOrLater) visibility = visibility or View.SYSTEM_UI_FLAG_IMMERSIVE
             visibility = visibility or View.SYSTEM_UI_FLAG_FULLSCREEN
         } else {
             player.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -619,7 +628,15 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             hudBinding.orientationToggle.setOnLongClickListener(if (enabled) player else null)
             hudBinding.swipeToUnlock.setOnStartTouchingListener { showOverlayTimeout(VideoPlayerActivity.OVERLAY_INFINITE) }
             hudBinding.swipeToUnlock.setOnStopTouchingListener { showOverlayTimeout(Settings.videoHudDelay * 1000) }
-            hudBinding.swipeToUnlock.setOnUnlockListener { player.toggleLock() }
+            hudBinding.swipeToUnlock.setOnUnlockListener {
+                player.lifecycleScope.launch(Dispatchers.IO) {
+                    if (!player.checkPIN())
+                        player.isLocked = false
+                    withContext(Dispatchers.Main) {
+                        player.toggleLock()
+                    }
+                }
+            }
         }
         if (::hudRightBinding.isInitialized){
             hudRightBinding.playerOverlayNavmenu.setOnClickListener(if (enabled) player else null)
@@ -939,11 +956,16 @@ class VideoPlayerOverlayDelegate (private val player: VideoPlayerActivity) {
             hudBinding.swipeToUnlock.setVisible()
             //make sure the title and unlock views are not conflicting with the cutout / gestures
             (playerUiContainer.layoutParams as? FrameLayout.LayoutParams)?.let {
-                it.topMargin =
-                    player.window.decorView.rootWindowInsets.displayCutout?.safeInsetTop ?: 0
-                it.bottomMargin =
-                    (player.window.decorView.rootWindowInsets.displayCutout?.safeInsetBottom
-                        ?: 0) + 24.dp
+                if (AndroidUtil.isPOrLater) {
+                    it.topMargin =
+                        player.window.decorView.rootWindowInsets.displayCutout?.safeInsetTop ?: 0
+                    it.bottomMargin =
+                        (player.window.decorView.rootWindowInsets.displayCutout?.safeInsetBottom
+                            ?: 0) + 24.dp
+                } else {
+                    it.topMargin = 0
+                    it.bottomMargin = 24.dp
+                }
             }
 
         }
