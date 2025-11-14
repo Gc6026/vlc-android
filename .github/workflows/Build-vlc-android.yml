@@ -36,20 +36,27 @@ jobs:
       - name: Set local.properties
         run: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          # Optional but sometimes useful:
+          echo "ndk.dir=$ANDROID_SDK_ROOT/ndk/26.1.10909125" >> local.properties
 
       - name: Make Gradle executable
         run: chmod +x gradlew
 
+      # 🔹 Build the actual app module, not the library
       - name: Build VLC debug APK
-        run: ./gradlew :application:vlc-android:assembleDebug --stacktrace
-        
+        run: ./gradlew :application:app:assembleDebug --stacktrace
+
+      # 🔹 Debug: list where APKs actually went
       - name: List built APKs
         run: |
           echo "Searching for APKs..."
-          find . -type f -name "*.apk" -print
-        
+          find . -type f -name "*.apk" -print || true
+          echo "Listing application/app/build/outputs:"
+          ls -R application/app/build/outputs || true
+
+      # 🔹 Upload the debug APK from the app module
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: vlc-android-debug-apk
-          path: application/vlc-android/build/outputs/apk/debug/*.apk
+          path: application/app/build/outputs/apk/debug/*.apk
