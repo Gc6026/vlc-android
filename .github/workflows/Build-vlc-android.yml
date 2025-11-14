@@ -42,3 +42,9 @@ jobs:
 
       - name: Build VLC debug APK
         run: ./gradlew :application:vlc-android:assembleDebug --stacktrace
+        
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vlc-android-debug-apk
+          path: application/vlc-android/build/outputs/apk/debug/*.apk
