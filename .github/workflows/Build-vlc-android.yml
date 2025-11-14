@@ -43,6 +43,11 @@ jobs:
       - name: Build VLC debug APK
         run: ./gradlew :application:vlc-android:assembleDebug --stacktrace
         
+      - name: List built APKs
+        run: |
+          echo "Searching for APKs..."
+          find . -type f -name "*.apk" -print
+        
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
